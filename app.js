@@ -423,7 +423,7 @@ function renderizarTablaCombinaciones() {
 
         // 2) Índice
         const tdIdx = document.createElement('td');
-        tdIdx.textContent = index + 1;
+        tdIdx.textContent = String(index + 1);
         fila.appendChild(tdIdx);
 
         // 3) Combinación (números o referencia a color-loto)
@@ -432,14 +432,14 @@ function renderizarTablaCombinaciones() {
             combinacion.combinaciones.forEach(c => {
                 const span = document.createElement('span');
                 span.className = `color-loto-cell color-${c.color}`;
-                span.textContent = c.numero;
+                span.textContent = String(c.numero);
                 tdComb.appendChild(span);
             });
         } else if (Array.isArray(combinacion.numeros)) {
             combinacion.numeros.forEach(num => {
                 const span = document.createElement('span');
                 span.className = combinacion.juego === 'baloto' ? 'baloto-number' : 'mi-loto-number';
-                span.textContent = num;
+                span.textContent = String(num);
                 tdComb.appendChild(span);
             });
         } else {
@@ -453,7 +453,7 @@ function renderizarTablaCombinaciones() {
         if (combinacion.juego === 'baloto' && combinacion.superBalota) {
             const spanSuper = document.createElement('span');
             spanSuper.className = 'super-balota';
-            spanSuper.textContent = combinacion.superBalota;
+            spanSuper.textContent = String(combinacion.superBalota);
             tdSuper.appendChild(spanSuper);
         } else {
             tdSuper.textContent = '-';
@@ -464,7 +464,8 @@ function renderizarTablaCombinaciones() {
         const tdColor = document.createElement('td');
         tdColor.className = 'color-loto-only';
         if (combinacion.juego === 'color-loto') {
-            tdColor.innerHTML = combinacion.combinaciones.map(c => `${c.color}:${c.numero}`).join(', ');
+            const colorLotoText = combinacion.combinaciones.map(c => `${c.color}:${c.numero}`).join(' ');
+            tdColor.textContent = colorLotoText;
         } else {
             tdColor.textContent = '-';
         }
@@ -473,16 +474,20 @@ function renderizarTablaCombinaciones() {
         // 6) Puntuación
         const tdPunt = document.createElement('td');
         const puntuacion = calcularPuntuacion(combinacion);
-        tdPunt.textContent = (puntuacion !== undefined && puntuacion !== null) ? puntuacion : '-';
+        tdPunt.textContent = String(puntuacion >= 0 ? puntuacion : '-');
         tdPunt.style.fontWeight = 'bold';
         fila.appendChild(tdPunt);
 
         // 7) Probabilidad
         const tdProb = document.createElement('td');
         const probabilidad = parseFloat(calcularProbabilidadIndividual(combinacion));
-        tdProb.textContent = !isNaN(probabilidad) ? probabilidad.toFixed(2) + '%' : '-';
+        if (!isNaN(probabilidad)) {
+            tdProb.textContent = probabilidad.toFixed(2) + '%';
+            tdProb.style.color = probabilidad > 15 ? '#2ecc71' : probabilidad > 10 ? '#f39c12' : '#e74c3c';
+        } else {
+            tdProb.textContent = '-';
+        }
         tdProb.style.fontWeight = 'bold';
-        if (!isNaN(probabilidad)) tdProb.style.color = probabilidad > 15 ? '#2ecc71' : probabilidad > 10 ? '#f39c12' : '#e74c3c';
         fila.appendChild(tdProb);
 
         elementos.cuerpoTabla.appendChild(fila);
