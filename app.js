@@ -260,7 +260,7 @@ function actualizarReglasJuego(juego) {
             reglasHTML = `
                 <h4>🎨 Reglas del Color Loto:</h4>
                 <ul>
-                    <li>Elige <strong>6 colores</strong> entre: Amarillo, Azul Oscuro, Rojo, Verde, Blanco, Negro</li>
+                    <li>Elige <strong>6 colores</strong> entre: Amarillo, Azul, Rojo, Verde, Blanco, Negro</li>
                     <li>A cada color asígnale un <strong>número del 1 al 7</strong></li>
                     <li><strong>Puedes:</strong> Jugar con colores repetidos pero no con el mismo número</li>
                     <li><strong>O puedes:</strong> Jugar con números repetidos pero no con el mismo color</li>
