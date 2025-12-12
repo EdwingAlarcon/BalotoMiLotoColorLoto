@@ -20,6 +20,7 @@ const elementos = {
     verHistorial: document.getElementById('ver-historial'),
     cerrarHistorico: document.getElementById('cerrar-historico'),
     limpiarHistorico: document.getElementById('limpiar-historico'),
+    limpiarEstadisticas: document.getElementById('limpiar-estadisticas'),
     seleccionarTodas: document.getElementById('seleccionar-todas'),
     cuerpoTabla: document.getElementById('cuerpo-tabla'),
     seccionHistorico: document.getElementById('seccion-historico'),
@@ -33,7 +34,10 @@ const elementos = {
     totalCombinaciones: document.getElementById('total-combinaciones'),
     totalLotes: document.getElementById('total-lotes'),
     mejorFrecuencia: document.getElementById('mejor-frecuencia'),
-    probabilidadPromedio: document.getElementById('probabilidad-promedio')
+    probabilidadPromedio: document.getElementById('probabilidad-promedio'),
+    exportHistorico: document.getElementById('export-historico'),
+    importHistorico: document.getElementById('import-historico'),
+    importFile: document.getElementById('import-file')
 };
 
 // Nota: usar el objeto `elementos` para acceder a nodos relacionados a UI/estadísticas
@@ -70,15 +74,12 @@ function configurarEventListeners() {
     elementos.seleccionarMejores.addEventListener('click', seleccionarMejoresCombinaciones);
     elementos.eliminarSeleccionados.addEventListener('click', eliminarCombinacionesSeleccionadas);
     elementos.verHistorial.addEventListener('click', mostrarHistorico);
-    // Export / import histórico
-    elementos.exportHistorico = document.getElementById('export-historico');
-    elementos.importHistorico = document.getElementById('import-historico');
-    elementos.importFile = document.getElementById('import-file');
     elementos.exportHistorico.addEventListener('click', exportarHistorico);
     elementos.importHistorico.addEventListener('click', () => elementos.importFile.click());
     elementos.importFile.addEventListener('change', manejarImportFile);
     elementos.cerrarHistorico.addEventListener('click', () => elementos.seccionHistorico.classList.add('hidden'));
     elementos.limpiarHistorico.addEventListener('click', limpiarHistoricoCompleto);
+    elementos.limpiarEstadisticas.addEventListener('click', limpiarEstadisticas);
     elementos.seleccionarTodas.addEventListener('change', seleccionarTodasCombinaciones);
     elementos.themeToggle.addEventListener('click', toggleTema);
     
@@ -607,7 +608,20 @@ function limpiarCombinacionesActuales() {
     }
 }
 
-// Función para seleccionar todas
+// Función para limpiar estadísticas
+function limpiarEstadisticas() {
+    if (confirm('¿Limpiar todas las estadísticas? Esta acción no se puede deshacer.')) {
+        estadisticas = {
+            totalGeneradas: 0,
+            totalGuardadas: 0,
+            frecuenciaNumeros: {},
+            lotesGuardados: 0
+        };
+        localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
+        actualizarEstadisticas();
+        mostrarNotificacion('Estadísticas limpiadas', 'success');
+    }
+}// Función para seleccionar todas
 function seleccionarTodasCombinaciones() {
     const seleccionar = elementos.seleccionarTodas.checked;
     combinacionesActuales.forEach(c => c.seleccionada = seleccionar);
