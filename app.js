@@ -178,23 +178,42 @@ function actualizarProbabilidades(juego) {
 function calcularProbabilidadIndividual(combinacion) {
     let baseProb = 0;
     
-    switch(combinacion.juego) {
-        case 'baloto':
-            // Basado en distribución de números y paridad
-            const paresBaloto = combinacion.numeros.filter(n => n % 2 === 0).length;
-            baseProb = 8.15 + (Math.abs(paresBaloto - 2.5) * 0.5);
-            break;
-            
-        case 'mi-loto':
-            const paresMiLoto = combinacion.numeros.filter(n => n % 2 === 0).length;
-            baseProb = 12.45 + (Math.abs(paresMiLoto - 2.5) * 0.8);
-            break;
-            
-        case 'color-loto':
-            const coloresUnicos = new Set(combinacion.combinaciones.map(c => c.color));
-            const numerosUnicos = new Set(combinacion.combinaciones.map(c => c.numero));
-            baseProb = 15.67 + (coloresUnicos.size * 0.8) + (numerosUnicos.size * 0.6);
-            break;
+    try {
+        switch(combinacion.juego) {
+            case 'baloto':
+                // Basado en distribución de números y paridad
+                if (Array.isArray(combinacion.numeros) && combinacion.numeros.length > 0) {
+                    const paresBaloto = combinacion.numeros.filter(n => n % 2 === 0).length;
+                    baseProb = 8.15 + (Math.abs(paresBaloto - 2.5) * 0.5);
+                } else {
+                    baseProb = 8.15;
+                }
+                break;
+                
+            case 'mi-loto':
+                if (Array.isArray(combinacion.numeros) && combinacion.numeros.length > 0) {
+                    const paresMiLoto = combinacion.numeros.filter(n => n % 2 === 0).length;
+                    baseProb = 12.45 + (Math.abs(paresMiLoto - 2.5) * 0.8);
+                } else {
+                    baseProb = 12.45;
+                }
+                break;
+                
+            case 'color-loto':
+                if (Array.isArray(combinacion.combinaciones) && combinacion.combinaciones.length > 0) {
+                    const coloresUnicos = new Set(combinacion.combinaciones.map(c => c.color));
+                    const numerosUnicos = new Set(combinacion.combinaciones.map(c => c.numero));
+                    baseProb = 15.67 + (coloresUnicos.size * 0.8) + (numerosUnicos.size * 0.6);
+                } else {
+                    baseProb = 15.67;
+                }
+                break;
+            default:
+                baseProb = 10;
+        }
+    } catch (e) {
+        console.error('Error calculando probabilidad:', e);
+        baseProb = 10;
     }
     
     return Math.min(baseProb, 25).toFixed(2);
@@ -497,15 +516,27 @@ function renderizarTablaCombinaciones() {
 }
 
 // Función para calcular puntuación
+// Función para calcular puntuación
 function calcularPuntuacion(combinacion) {
-    if (combinacion.juego === 'color-loto') {
-        const colores = new Set(combinacion.combinaciones.map(c => c.color));
-        const numeros = new Set(combinacion.combinaciones.map(c => c.numero));
-        return colores.size + numeros.size;
-    } else {
-        const pares = combinacion.numeros.filter(n => n % 2 === 0).length;
-        const impares = combinacion.numeros.length - pares;
-        return Math.min(pares, impares) * 2;
+    try {
+        if (combinacion.juego === 'color-loto') {
+            if (Array.isArray(combinacion.combinaciones) && combinacion.combinaciones.length > 0) {
+                const colores = new Set(combinacion.combinaciones.map(c => c.color));
+                const numeros = new Set(combinacion.combinaciones.map(c => c.numero));
+                return colores.size + numeros.size;
+            }
+            return 0;
+        } else {
+            if (Array.isArray(combinacion.numeros) && combinacion.numeros.length > 0) {
+                const pares = combinacion.numeros.filter(n => n % 2 === 0).length;
+                const impares = combinacion.numeros.length - pares;
+                return Math.min(pares, impares) * 2;
+            }
+            return 0;
+        }
+    } catch (e) {
+        console.error('Error calculando puntuación:', e, combinacion);
+        return 0;
     }
 }
 
