@@ -1,4 +1,4 @@
-// Módulo de estadísticas y análisis
+// Módulo de estadísticas y análisis - VERSION CORREGIDA
 
 /**
  * Actualiza todas las estadísticas de la aplicación
@@ -14,25 +14,37 @@ function actualizarEstadisticas() {
  * Calcula la frecuencia de todos los números generados
  */
 function actualizarFrecuenciaNumeros() {
-    const frecuencia = {};
-    const config = CONFIG.juegos[document.getElementById('juego').value];
+    const juego = document.getElementById('juego').value;
+    const config = CONFIG.juegos[juego];
     
     // Reiniciar frecuencia para el juego actual
     AppState.estadisticas.frecuenciaNumeros = {};
     
-    // Contar apariciones de cada número
-    AppState.combinaciones.forEach(combinacion => {
-        combinacion.numeros.forEach(numero => {
-            AppState.estadisticas.frecuenciaNumeros[numero] = 
-                (AppState.estadisticas.frecuenciaNumeros[numero] || 0) + 1;
+    if (juego === 'color-loto') {
+        // Para Color Loto, contar números asignados a colores (1-7)
+        AppState.combinaciones.forEach(combinacion => {
+            if (combinacion.colorNumeros) {
+                combinacion.colorNumeros.forEach(numero => {
+                    AppState.estadisticas.frecuenciaNumeros[numero] = 
+                        (AppState.estadisticas.frecuenciaNumeros[numero] || 0) + 1;
+                });
+            }
         });
-        
-        // Contar Super Balota si existe
-        if (combinacion.superBalota) {
-            AppState.estadisticas.frecuenciaNumeros[`SB${combinacion.superBalota}`] = 
-                (AppState.estadisticas.frecuenciaNumeros[`SB${combinacion.superBalota}`] || 0) + 1;
-        }
-    });
+    } else {
+        // Para Baloto y Mi Loto, contar números principales
+        AppState.combinaciones.forEach(combinacion => {
+            combinacion.numeros.forEach(numero => {
+                AppState.estadisticas.frecuenciaNumeros[numero] = 
+                    (AppState.estadisticas.frecuenciaNumeros[numero] || 0) + 1;
+            });
+            
+            // Contar Super Balota si existe
+            if (combinacion.superBalota) {
+                AppState.estadisticas.frecuenciaNumeros[`SB${combinacion.superBalota}`] = 
+                    (AppState.estadisticas.frecuenciaNumeros[`SB${combinacion.superBalota}`] || 0) + 1;
+            }
+        });
+    }
     
     // Actualizar probabilidad acumulada
     let probabilidadTotal = 0;
@@ -64,6 +76,7 @@ function actualizarNumeroMasFrecuente() {
     
     if (Object.keys(frecuencia).length === 0) {
         AppState.estadisticas.numeroMasFrecuente = null;
+        AppState.estadisticas.frecuenciaMaxima = 0;
         return;
     }
     
@@ -90,13 +103,13 @@ function actualizarUIEstadisticas() {
     // Actualizar total de combinaciones
     const totalElement = document.getElementById('total-combinaciones');
     if (totalElement) {
-        totalElement.textContent = AppState.estadisticas.totalGeneradas;
+        totalElement.textContent = AppState.estadisticas.totalGeneradas.toLocaleString();
     }
     
     // Actualizar total de lotes
     const lotesElement = document.getElementById('total-lotes');
     if (lotesElement) {
-        lotesElement.textContent = AppState.estadisticas.totalLotes;
+        lotesElement.textContent = AppState.estadisticas.totalLotes.toLocaleString();
     }
     
     // Actualizar número más frecuente
@@ -131,8 +144,9 @@ function actualizarPanelProbabilidades() {
     const panel = document.getElementById('probabilityContent');
     if (!panel) return;
     
-    const config = CONFIG.juegos[document.getElementById('juego').value];
-    const probabilidades = calcularProbabilidadesDetalladas(config);
+    const juego = document.getElementById('juego').value;
+    const config = CONFIG.juegos[juego];
+    const probabilidades = calcularProbabilidadesDetalladas(config, juego);
     
     panel.innerHTML = probabilidades.map(prob => `
         <div class="probability-card">
@@ -145,34 +159,75 @@ function actualizarPanelProbabilidades() {
 /**
  * Calcula probabilidades detalladas para el juego actual
  * @param {Object} config - Configuración del juego
+ * @param {string} juego - Tipo de juego
  * @returns {Array} Array de objetos con probabilidades
  */
-function calcularProbabilidadesDetalladas(config) {
+function calcularProbabilidadesDetalladas(config, juego) {
     const probabilidades = [];
     
-    // Probabilidad de acertar todos los números
-    const n = config.maxNumero - config.minNumero + 1;
-    const k = config.numeros;
-    const combinacionesTotal = factorial(n) / (factorial(k) * factorial(n - k));
-    
-    probabilidades.push({
-        label: 'Probabilidad de acertar todos los números',
-        valor: `1 en ${combinacionesTotal.toLocaleString()}`
-    });
-    
-    // Probabilidad de acertar 1 número
-    const prob1Numero = k / n * 100;
-    probabilidades.push({
-        label: 'Probabilidad de acertar al menos 1 número',
-        valor: `${prob1Numero.toFixed(2)}%`
-    });
-    
-    // Probabilidad considerando Super Balota
-    if (config.superBalota) {
-        const combinacionesConSuperBalota = combinacionesTotal * (config.maxSuperBalota - config.minSuperBalota + 1);
+    if (juego === 'color-loto') {
+        // COLOR LOTO
+        const combinacionesColores = factorial(6); // 720
+        const combinacionesNumeros = Math.pow(7, 6); // 117,649
+        const totalCombinaciones = combinacionesColores * combinacionesNumeros; // 84,707,280
+        
+        probabilidades.push({
+            label: 'Total combinaciones posibles',
+            valor: totalCombinaciones.toLocaleString()
+        });
+        
+        probabilidades.push({
+            label: 'Probabilidad de ganar',
+            valor: `1 en ${totalCombinaciones.toLocaleString()}`
+        });
+        
+        probabilidades.push({
+            label: 'Probabilidad porcentual',
+            valor: `${(1/totalCombinaciones*100).toFixed(10)}%`
+        });
+        
+    } else if (juego === 'baloto') {
+        // BALOTO
+        const combinacionesNumeros = factorial(43) / (factorial(5) * factorial(38)); // 8,145,060
+        const totalCombinaciones = combinacionesNumeros * 16; // 130,321,920
+        
+        probabilidades.push({
+            label: 'Combinaciones de 5 números',
+            valor: `C(43,5) = ${combinacionesNumeros.toLocaleString()}`
+        });
+        
+        probabilidades.push({
+            label: 'Con Super Balota (1-16)',
+            valor: `${totalCombinaciones.toLocaleString()}`
+        });
+        
+        probabilidades.push({
+            label: 'Probabilidad de acertar 5 números',
+            valor: `1 en ${combinacionesNumeros.toLocaleString()}`
+        });
+        
         probabilidades.push({
             label: 'Probabilidad con Super Balota',
-            valor: `1 en ${combinacionesConSuperBalota.toLocaleString()}`
+            valor: `1 en ${totalCombinaciones.toLocaleString()}`
+        });
+        
+    } else if (juego === 'mi-loto') {
+        // MI LOTO
+        const totalCombinaciones = factorial(39) / (factorial(5) * factorial(34)); // 575,757
+        
+        probabilidades.push({
+            label: 'Total combinaciones posibles',
+            valor: totalCombinaciones.toLocaleString()
+        });
+        
+        probabilidades.push({
+            label: 'Probabilidad de ganar',
+            valor: `1 en ${totalCombinaciones.toLocaleString()}`
+        });
+        
+        probabilidades.push({
+            label: 'Probabilidad de acertar 1 número',
+            valor: `${(5/39*100).toFixed(2)}%`
         });
     }
     
@@ -184,12 +239,6 @@ function calcularProbabilidadesDetalladas(config) {
             valor: `${mejorProbabilidad.toFixed(8)}%`
         });
     }
-    
-    // Distribución recomendada
-    probabilidades.push({
-        label: 'Distribución ideal pares/impares',
-        valor: `${Math.floor(k/2)} pares / ${Math.ceil(k/2)} impares`
-    });
     
     return probabilidades;
 }
@@ -224,7 +273,8 @@ function limpiarEstadisticas() {
  * @returns {Object} Reporte estadístico
  */
 function generarReporteEstadistico() {
-    const config = CONFIG.juegos[document.getElementById('juego').value];
+    const juego = document.getElementById('juego').value;
+    const config = CONFIG.juegos[juego];
     const frecuencia = AppState.estadisticas.frecuenciaNumeros;
     
     // Separar números normales de Super Balotas

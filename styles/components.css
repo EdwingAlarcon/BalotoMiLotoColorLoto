@@ -258,7 +258,7 @@
 }
 
 .data-table .col-extra {
-    width: 100px;
+    width: 150px;
     text-align: center;
 }
 
@@ -595,4 +595,42 @@
 .badge-info {
     background-color: var(--info-color);
     color: white;
+}
+
+/* ===== COLOR LOTERÍA ESPECÍFICO ===== */
+.color-loto-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 3px;
+}
+
+.color-number {
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 2px;
+    color: var(--text-color);
+}
+
+.color-loto-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+.mini-ball {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    min-height: 25px;
+    font-size: 0.8rem;
+}
+
+.puntuacion-bar {
+    height: 8px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1);
+    border-radius: 4px;
+    margin-bottom: 4px;
+    transition: width 0.3s ease;
 }

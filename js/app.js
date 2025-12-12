@@ -1,36 +1,36 @@
-// Configuración global de la aplicación
+// Configuración global de la aplicación - VERSION CORREGIDA CON LAS REGLAS CORRECTAS
 const CONFIG = {
-    version: '1.0.0',
+    version: '1.0.1',
     maxCombinaciones: 100,
     maxHistorial: 1000,
     juegos: {
         baloto: {
             nombre: 'Baloto',
-            numeros: 6,
+            numeros: 5,  // CORRECCIÓN: 5 números del 1 al 43
             minNumero: 1,
             maxNumero: 43,
             superBalota: true,
             minSuperBalota: 1,
             maxSuperBalota: 16,
-            descripcion: 'Selecciona 6 números del 1 al 43 y 1 Super Balota del 1 al 16'
+            descripcion: '5 números del 1 al 43 + 1 Super Balota del 1 al 16'
         },
         'mi-loto': {
             nombre: 'Mi Loto',
             numeros: 5,
             minNumero: 1,
-            maxNumero: 46,
+            maxNumero: 39,  // CORRECCIÓN: 39 números (no 46)
             superBalota: false,
-            descripcion: 'Selecciona 5 números del 1 al 46'
+            descripcion: '5 números del 1 al 39'
         },
         'color-loto': {
             nombre: 'Color Loto',
-            numeros: 6,
+            numeros: 6,  // 6 colores
             minNumero: 1,
-            maxNumero: 42,
+            maxNumero: 7,  // CORRECCIÓN: números del 1 al 7 para cada color
             superBalota: false,
             colores: true,
             coloresDisponibles: ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'],
-            descripcion: 'Selecciona 6 números del 1 al 42 y un color para cada número'
+            descripcion: '6 colores diferentes, cada uno con un número del 1 al 7'
         }
     }
 };
@@ -73,7 +73,7 @@ function inicializarApp() {
     // Mostrar reglas del juego actual
     mostrarReglasJuego();
     
-    console.log('Aplicación inicializada correctamente');
+    console.log('Aplicación inicializada correctamente - Reglas corregidas');
 }
 
 function inicializarUI() {

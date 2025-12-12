@@ -75,6 +75,10 @@
     background-color: #000000;
 }
 
+[data-theme="dark"] .color-number {
+    color: #f0f0f0;
+}
+
 /* Transiciones suaves para cambio de tema */
 body,
 .card,

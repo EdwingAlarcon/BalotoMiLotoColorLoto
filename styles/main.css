@@ -144,3 +144,9 @@
         print-color-adjust: exact;
     }
 }
+
+/* Clases para modo de juego */
+.baloto-mode .baloto-only,
+.color-loto-mode .color-loto-only {
+    display: table-cell;
+}

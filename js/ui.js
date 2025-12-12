@@ -1,4 +1,4 @@
-// Módulo de interfaz de usuario
+// Módulo de interfaz de usuario - VERSION CORREGIDA
 
 /**
  * Muestra una notificación en pantalla
@@ -64,17 +64,36 @@ function actualizarTablaCombinaciones() {
     const config = CONFIG.juegos[juego];
     
     const rows = AppState.combinaciones.map((combinacion, index) => {
-        const numerosHTML = combinacion.numeros.map(num => 
-            `<span class="number-ball ${juego}-number">${num}</span>`
-        ).join('');
+        // Generar HTML para números principales
+        let numerosHTML = '';
+        if (juego === 'color-loto') {
+            // Para Color Loto: mostrar colores con sus números
+            numerosHTML = combinacion.colores.map((color, idx) => {
+                const numero = combinacion.colorNumeros ? combinacion.colorNumeros[idx] : '?';
+                return `
+                    <div class="color-loto-item">
+                        <span class="number-ball color-${color}" title="${color} (${numero})">
+                            ${color.charAt(0).toUpperCase()}
+                        </span>
+                        <span class="color-number">${numero}</span>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            // Para Baloto y Mi Loto: mostrar números
+            numerosHTML = combinacion.numeros.map(num => 
+                `<span class="number-ball ${juego}-number">${num}</span>`
+            ).join('');
+        }
         
+        // Generar HTML para columna extra
         let extraHTML = '';
         if (juego === 'baloto' && combinacion.superBalota) {
-            extraHTML = `<span class="number-ball super-balota">${combinacion.superBalota}</span>`;
-        } else if (juego === 'color-loto' && combinacion.colores) {
-            extraHTML = combinacion.colores.map(color => 
-                `<span class="number-ball color-${color}">${color.charAt(0).toUpperCase()}</span>`
-            ).join('');
+            extraHTML = `<span class="number-ball super-balota" title="Super Balota">${combinacion.superBalota}</span>`;
+        } else if (juego === 'color-loto') {
+            // Para Color Loto: mostrar resumen en columna extra
+            const coloresStr = combinacion.colores.join(', ');
+            extraHTML = `<span class="badge badge-info" title="${coloresStr}">6 colores</span>`;
         }
         
         return `
@@ -119,18 +138,42 @@ function mostrarReglasJuego() {
     
     if (!reglasSection || !reglasContenido) return;
     
-    reglasContenido.innerHTML = `
-        <p><strong>${config.nombre}:</strong> ${config.descripcion}</p>
-        <ul>
-            <li>Números por combinación: ${config.numeros}</li>
-            <li>Rango de números: ${config.minNumero} - ${config.maxNumero}</li>
-            ${config.superBalota ? 
-                `<li>Rango Super Balota: ${config.minSuperBalota} - ${config.maxSuperBalota}</li>` : ''}
-            ${config.colores ? 
-                `<li>Colores disponibles: ${config.coloresDisponibles.join(', ')}</li>` : ''}
-        </ul>
-    `;
+    let reglasHTML = '';
     
+    if (juego === 'baloto') {
+        reglasHTML = `
+            <p><strong>Baloto:</strong></p>
+            <ul>
+                <li>Selecciona 5 números diferentes del 1 al 43</li>
+                <li>Selecciona 1 Super Balota del 1 al 16</li>
+                <li>Total: 5 números + 1 Super Balota</li>
+                <li>Combinaciones posibles: 130,321,920</li>
+            </ul>
+        `;
+    } else if (juego === 'mi-loto') {
+        reglasHTML = `
+            <p><strong>Mi Loto:</strong></p>
+            <ul>
+                <li>Selecciona 5 números diferentes del 1 al 39</li>
+                <li>No hay Super Balota en este juego</li>
+                <li>Total: 5 números</li>
+                <li>Combinaciones posibles: 575,757</li>
+            </ul>
+        `;
+    } else if (juego === 'color-loto') {
+        reglasHTML = `
+            <p><strong>Color Loto:</strong></p>
+            <ul>
+                <li>Selecciona 6 colores diferentes de: amarillo, azul, rojo, verde, blanco, negro</li>
+                <li>A cada color se le asigna un número del 1 al 7</li>
+                <li>Los números pueden repetirse entre diferentes colores</li>
+                <li>Total: 6 colores + 6 números (uno por cada color)</li>
+                <li>Combinaciones posibles: 84,707,280</li>
+            </ul>
+        `;
+    }
+    
+    reglasContenido.innerHTML = reglasHTML;
     reglasSection.hidden = false;
 }
 
@@ -310,26 +353,57 @@ function cargarContenidoHistorico() {
         return;
     }
     
-    const historicoHTML = AppState.historial.map(lote => `
-        <div class="historico-lote card">
-            <div class="lote-header">
-                <h3>Lote #${lote.id.toString().slice(-4)}</h3>
-                <span class="badge">${new Date(lote.fecha).toLocaleDateString()}</span>
-                <span class="badge badge-info">${CONFIG.juegos[lote.juego].nombre}</span>
-                <span class="badge badge-success">${lote.combinaciones.length} combinaciones</span>
+    const historicoHTML = AppState.historial.map(lote => {
+        const juegoNombre = CONFIG.juegos[lote.juego].nombre;
+        const fecha = new Date(lote.fecha).toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        return `
+            <div class="historico-lote card">
+                <div class="lote-header">
+                    <h3>${juegoNombre}</h3>
+                    <span class="badge">${fecha}</span>
+                    <span class="badge badge-success">${lote.combinaciones.length} combinaciones</span>
+                </div>
+                <div class="lote-combinaciones">
+                    ${lote.combinaciones.slice(0, 3).map(combinacion => {
+                        if (lote.juego === 'color-loto') {
+                            // Mostrar primeros 3 colores para Color Loto
+                            const coloresMostrar = combinacion.colores.slice(0, 3);
+                            return `
+                                <div class="combinacion-mini">
+                                    ${coloresMostrar.map(color => 
+                                        `<span class="number-ball mini-ball color-${color}">${color.charAt(0)}</span>`
+                                    ).join('')}
+                                    <span class="badge badge-info">+${combinacion.colores.length - 3} más</span>
+                                </div>
+                            `;
+                        } else {
+                            // Mostrar números para Baloto/Mi Loto
+                            const numerosMostrar = combinacion.numeros.slice(0, 3);
+                            return `
+                                <div class="combinacion-mini">
+                                    ${numerosMostrar.map(num => 
+                                        `<span class="number-ball mini-ball ${lote.juego}-number">${num}</span>`
+                                    ).join('')}
+                                    ${combinacion.superBalota ? 
+                                        `<span class="number-ball mini-ball super-balota">${combinacion.superBalota}</span>` : ''}
+                                    <span class="badge badge-info">+${combinacion.numeros.length - 3} más</span>
+                                </div>
+                            `;
+                        }
+                    }).join('')}
+                    ${lote.combinaciones.length > 3 ? 
+                        `<p class="text-center mt-1">... y ${lote.combinaciones.length - 3} combinaciones más</p>` : ''}
+                </div>
             </div>
-            <div class="lote-combinaciones">
-                ${lote.combinaciones.slice(0, 3).map(combinacion => `
-                    <div class="combinacion-mini">
-                        ${combinacion.numeros.map(n => `<span class="number-ball mini-ball">${n}</span>`).join('')}
-                        ${combinacion.superBalota ? `<span class="number-ball mini-ball super-balota">${combinacion.superBalota}</span>` : ''}
-                    </div>
-                `).join('')}
-                ${lote.combinaciones.length > 3 ? 
-                    `<p class="text-center">... y ${lote.combinaciones.length - 3} más</p>` : ''}
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
     
     contenido.innerHTML = historicoHTML;
 }
@@ -338,3 +412,4 @@ function cargarContenidoHistorico() {
 window.mostrarNotificacion = mostrarNotificacion;
 window.actualizarTablaCombinaciones = actualizarTablaCombinaciones;
 window.mostrarReglasJuego = mostrarReglasJuego;
+window.actualizarClasesJuego = actualizarClasesJuego;
