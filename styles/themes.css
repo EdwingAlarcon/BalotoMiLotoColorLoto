@@ -1,0 +1,98 @@
+/* ===== TEMA OSCURO ===== */
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --bg-card: #2d2d2d;
+    --text-color: #f0f0f0;
+    --text-secondary: #b0b0b0;
+    --border-color: #404040;
+    --primary-color: #4a90e2;
+    
+    /* Colores de juegos ajustados para contraste */
+    --baloto-color: #e6b800;
+    --super-balota-color: #ff4d4d;
+    --mi-loto-color: #0056b3;
+    
+    /* Colores para Color Loto en modo oscuro */
+    --color-amarillo: #d4ac0d;
+    --color-azul: #0056b3;
+    --color-rojo: #c82333;
+    --color-verde: #218838;
+    --color-blanco: #e9ecef;
+    --color-negro: #343a40;
+    
+    /* Sombras más sutiles en modo oscuro */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .stat-card {
+    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .rules-section {
+    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+}
+
+[data-theme="dark"] .data-table {
+    background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .data-table th {
+    background-color: var(--primary-color);
+}
+
+[data-theme="dark"] .data-table td {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+    background-color: #3d3d3d;
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] .form-textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+[data-theme="dark"] .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .main-footer {
+    background-color: #000000;
+}
+
+/* Transiciones suaves para cambio de tema */
+body,
+.card,
+.btn,
+.form-input,
+.form-select,
+.data-table,
+.stat-card {
+    transition: background-color 0.3s ease, 
+                border-color 0.3s ease, 
+                color 0.3s ease;
+}
+
+/* Icono del tema */
+.theme-icon {
+    transition: transform 0.3s ease;
+}
+
+[data-theme="dark"] .theme-icon {
+    transform: rotate(180deg);
+}
