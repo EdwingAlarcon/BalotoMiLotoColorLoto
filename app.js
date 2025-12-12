@@ -328,71 +328,81 @@ function actualizarVisibilidadColumnas() {
 
 // Función para generar combinaciones con animación
 function generarCombinaciones() {
-    const boton = elementos.generar;
-    boton.classList.add('loading');
+    try {
+        const boton = elementos.generar;
+        if (!boton) return;
+        boton.classList.add('loading');
 
-    setTimeout(() => {
-        const juego = elementos.juego.value;
-        // Validar y normalizar el input del número de combinaciones
-        const raw = parseInt(elementos.combinaciones.value);
-        const minAllowed = parseInt(elementos.combinaciones.min) || 1;
-        const maxAllowed = parseInt(elementos.combinaciones.max) || 100;
-        let numCombinaciones = Number.isFinite(raw) ? raw : 5;
-        if (numCombinaciones < minAllowed) {
-            numCombinaciones = minAllowed;
-            mostrarNotificacion(`Número mínimo permitido: ${minAllowed}. Ajustado.`, 'warning');
-        }
-        if (numCombinaciones > maxAllowed) {
-            numCombinaciones = maxAllowed;
-            mostrarNotificacion(`Número máximo permitido: ${maxAllowed}. Ajustado.`, 'warning');
-        }
-
-        combinacionesActuales = [];
-        let generadas = 0;
-
-        for (let i = 0; i < numCombinaciones; i++) {
-            const combinacion = {
-                juego: juego,
-                id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + i),
-                seleccionada: false
-            };
-
-            switch (juego) {
-                case 'baloto':
-                    combinacion.numeros = generarNumerosAleatorios(5, 1, 43);
-                    combinacion.superBalota = Math.floor(Math.random() * 16) + 1;
-                    break;
-                case 'mi-loto':
-                    combinacion.numeros = generarNumerosAleatorios(5, 1, 39);
-                    break;
-                case 'color-loto':
-                    combinacion.combinaciones = generarCombinacionesColorLoto();
-                    break;
-            }
-
-            // Solo contar/comitar la combinación si se generó correctamente
-            if (combinacion) {
-                combinacionesActuales.push(combinacion);
-                generadas++;
-
-                // Actualizar estadísticas de frecuencia
-                if (juego !== 'color-loto' && Array.isArray(combinacion.numeros)) {
-                    combinacion.numeros.forEach(num => {
-                        estadisticas.frecuenciaNumeros[num] = (estadisticas.frecuenciaNumeros[num] || 0) + 1;
-                    });
+        setTimeout(() => {
+            try {
+                const juego = elementos.juego.value;
+                // Validar y normalizar el input del número de combinaciones
+                const raw = parseInt(elementos.combinaciones.value);
+                const minAllowed = parseInt(elementos.combinaciones.min) || 1;
+                const maxAllowed = parseInt(elementos.combinaciones.max) || 100;
+                let numCombinaciones = Number.isFinite(raw) ? raw : 5;
+                if (numCombinaciones < minAllowed) {
+                    numCombinaciones = minAllowed;
+                    mostrarNotificacion(`Número mínimo permitido: ${minAllowed}. Ajustado.`, 'warning');
                 }
+                if (numCombinaciones > maxAllowed) {
+                    numCombinaciones = maxAllowed;
+                    mostrarNotificacion(`Número máximo permitido: ${maxAllowed}. Ajustado.`, 'warning');
+                }
+
+                combinacionesActuales = [];
+                let generadas = 0;
+
+                for (let i = 0; i < numCombinaciones; i++) {
+                    const combinacion = {
+                        juego: juego,
+                        id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + i),
+                        seleccionada: false
+                    };
+
+                    switch (juego) {
+                        case 'baloto':
+                            combinacion.numeros = generarNumerosAleatorios(5, 1, 43);
+                            combinacion.superBalota = Math.floor(Math.random() * 16) + 1;
+                            break;
+                        case 'mi-loto':
+                            combinacion.numeros = generarNumerosAleatorios(5, 1, 39);
+                            break;
+                        case 'color-loto':
+                            combinacion.combinaciones = generarCombinacionesColorLoto();
+                            break;
+                    }
+
+                    // Solo contar/comitar la combinación si se generó correctamente
+                    if (combinacion) {
+                        combinacionesActuales.push(combinacion);
+                        generadas++;
+
+                        // Actualizar estadísticas de frecuencia
+                        if (juego !== 'color-loto' && Array.isArray(combinacion.numeros)) {
+                            combinacion.numeros.forEach(num => {
+                                estadisticas.frecuenciaNumeros[num] = (estadisticas.frecuenciaNumeros[num] || 0) + 1;
+                            });
+                        }
+                    }
+                }
+
+                estadisticas.totalGeneradas += generadas;
+                localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
+
+                renderizarTablaCombinaciones();
+                actualizarVisibilidadColumnas();
+                actualizarEstadisticas();
+                boton.classList.remove('loading');
+                mostrarNotificacion(`${generadas} combinaciones generadas con éxito`, 'success');
+            } catch (e) {
+                console.error('Error:', e);
+                if (boton) boton.classList.remove('loading');
             }
-        }
-
-        estadisticas.totalGeneradas += generadas;
-        localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
-
-        renderizarTablaCombinaciones();
-        actualizarVisibilidadColumnas();
-        actualizarEstadisticas();
-        boton.classList.remove('loading');
-        mostrarNotificacion(`${generadas} combinaciones generadas con éxito`, 'success');
-    }, 800);
+        }, 800);
+    } catch (e) {
+        console.error('Error general:', e);
+    }
 }
 
 // Función auxiliar para generar números aleatorios
@@ -599,16 +609,20 @@ function eliminarCombinacionesSeleccionadas() {
 
 // Función para limpiar actuales
 function limpiarCombinacionesActuales() {
-    if (combinacionesActuales.length === 0) {
-        mostrarNotificacion('No hay combinaciones', 'info');
-        return;
-    }
-    
-    if (confirm('¿Limpiar todas las combinaciones?')) {
-        combinacionesActuales = [];
-        renderizarTablaCombinaciones();
-        actualizarEstadisticas();
-        mostrarNotificacion('Combinaciones limpiadas', 'success');
+    try {
+        if (combinacionesActuales.length === 0) {
+            mostrarNotificacion('No hay combinaciones', 'info');
+            return;
+        }
+        
+        if (confirm('¿Limpiar todas las combinaciones?')) {
+            combinacionesActuales = [];
+            renderizarTablaCombinaciones();
+            actualizarEstadisticas();
+            mostrarNotificacion('Combinaciones limpiadas', 'success');
+        }
+    } catch (e) {
+        console.error('Error:', e);
     }
 }
 
@@ -645,27 +659,32 @@ function actualizarCheckboxSeleccionarTodas() {
 
 // Función para guardar en histórico
 function guardarEnHistorico() {
-    if (combinacionesActuales.length === 0) {
-        mostrarNotificacion('No hay combinaciones', 'info');
-        return;
+    try {
+        if (combinacionesActuales.length === 0) {
+            mostrarNotificacion('No hay combinaciones', 'info');
+            return;
+        }
+        
+        const lote = {
+            id: Date.now(),
+            fecha: new Date().toLocaleString('es-ES'),
+            juego: elementos.juego.value,
+            combinaciones: JSON.parse(JSON.stringify(combinacionesActuales))
+        };
+        
+        historico.push(lote);
+        localStorage.setItem('historicoCombinaciones', JSON.stringify(historico));
+        
+        estadisticas.totalGuardadas += combinacionesActuales.length;
+        estadisticas.lotesGuardados++;
+        localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
+        actualizarEstadisticas();
+        
+        mostrarNotificacion('Combinaciones guardadas en histórico', 'success');
+    } catch (e) {
+        console.error('Error guardando:', e);
+        mostrarNotificacion('Error al guardar', 'error');
     }
-    
-    const lote = {
-        id: Date.now(),
-        fecha: new Date().toLocaleString('es-ES'),
-        juego: elementos.juego.value,
-        combinaciones: JSON.parse(JSON.stringify(combinacionesActuales))
-    };
-    
-    historico.push(lote);
-    localStorage.setItem('historicoCombinaciones', JSON.stringify(historico));
-    
-    estadisticas.totalGuardadas += combinacionesActuales.length;
-    estadisticas.lotesGuardados++;
-    localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
-    actualizarEstadisticas();
-    
-    mostrarNotificacion('Combinaciones guardadas en histórico', 'success');
 }
 
 // Exportar histórico a JSON descargable
