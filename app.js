@@ -114,6 +114,16 @@ function cargarTema() {
     }
 }
 
+// Función para obtener el nombre legible del juego
+function obtenerNombreJuego(juego) {
+    const nombres = {
+        'baloto': 'Baloto',
+        'mi-loto': 'Mi Loto',
+        'color-loto': 'Color Loto'
+    };
+    return nombres[juego] || juego;
+}
+
 // Función para actualizar probabilidades
 function actualizarProbabilidades(juego) {
     let probabilidadesHTML = '';
