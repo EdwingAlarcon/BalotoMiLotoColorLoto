@@ -68,26 +68,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Configurar todos los event listeners
 function configurarEventListeners() {
-    elementos.generar.addEventListener('click', generarCombinaciones);
-    elementos.guardar.addEventListener('click', guardarEnHistorico);
-    elementos.limpiar.addEventListener('click', limpiarCombinacionesActuales);
-    elementos.seleccionarMejores.addEventListener('click', seleccionarMejoresCombinaciones);
-    elementos.eliminarSeleccionados.addEventListener('click', eliminarCombinacionesSeleccionadas);
-    elementos.verHistorial.addEventListener('click', mostrarHistorico);
-    elementos.exportHistorico.addEventListener('click', exportarHistorico);
-    elementos.importHistorico.addEventListener('click', () => elementos.importFile.click());
-    elementos.importFile.addEventListener('change', manejarImportFile);
-    elementos.cerrarHistorico.addEventListener('click', () => elementos.seccionHistorico.classList.add('hidden'));
-    elementos.limpiarHistorico.addEventListener('click', limpiarHistoricoCompleto);
-    elementos.limpiarEstadisticas.addEventListener('click', limpiarEstadisticas);
-    elementos.seleccionarTodas.addEventListener('change', seleccionarTodasCombinaciones);
-    elementos.themeToggle.addEventListener('click', toggleTema);
+    if (elementos.generar) elementos.generar.addEventListener('click', generarCombinaciones);
+    if (elementos.guardar) elementos.guardar.addEventListener('click', guardarEnHistorico);
+    if (elementos.limpiar) elementos.limpiar.addEventListener('click', limpiarCombinacionesActuales);
+    if (elementos.seleccionarMejores) elementos.seleccionarMejores.addEventListener('click', seleccionarMejoresCombinaciones);
+    if (elementos.eliminarSeleccionados) elementos.eliminarSeleccionados.addEventListener('click', eliminarCombinacionesSeleccionadas);
+    if (elementos.verHistorial) elementos.verHistorial.addEventListener('click', mostrarHistorico);
+    if (elementos.exportHistorico) elementos.exportHistorico.addEventListener('click', exportarHistorico);
+    if (elementos.importHistorico) elementos.importHistorico.addEventListener('click', () => elementos.importFile.click());
+    if (elementos.importFile) elementos.importFile.addEventListener('change', manejarImportFile);
+    if (elementos.cerrarHistorico) elementos.cerrarHistorico.addEventListener('click', () => elementos.seccionHistorico.classList.add('hidden'));
+    if (elementos.limpiarHistorico) elementos.limpiarHistorico.addEventListener('click', limpiarHistoricoCompleto);
+    if (elementos.limpiarEstadisticas) elementos.limpiarEstadisticas.addEventListener('click', limpiarEstadisticas);
+    if (elementos.seleccionarTodas) elementos.seleccionarTodas.addEventListener('change', seleccionarTodasCombinaciones);
+    if (elementos.themeToggle) elementos.themeToggle.addEventListener('click', toggleTema);
     
-    elementos.juego.addEventListener('change', function() {
-        actualizarReglasJuego(this.value);
-        actualizarProbabilidades(this.value);
-        actualizarVisibilidadColumnas();
-    });
+    if (elementos.juego) {
+        elementos.juego.addEventListener('change', function() {
+            actualizarReglasJuego(this.value);
+            actualizarProbabilidades(this.value);
+            actualizarVisibilidadColumnas();
+        });
+    }
+    
+    console.log('Event listeners configurados', elementos);
 }
 
 // Función para el modo oscuro/claro
