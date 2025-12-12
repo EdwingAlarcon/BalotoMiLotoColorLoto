@@ -429,7 +429,12 @@ function renderizarTablaCombinaciones() {
         // 3) Combinación (números o referencia a color-loto)
         const tdComb = document.createElement('td');
         if (combinacion.juego === 'color-loto') {
-            tdComb.innerHTML = combinacion.combinaciones.map(c => `<span class="color-loto-cell color-${c.color}">${c.color}:${c.numero}</span>`).join(' ');
+            combinacion.combinaciones.forEach(c => {
+                const span = document.createElement('span');
+                span.className = `color-loto-cell color-${c.color}`;
+                span.textContent = c.numero;
+                tdComb.appendChild(span);
+            });
         } else if (Array.isArray(combinacion.numeros)) {
             combinacion.numeros.forEach(num => {
                 const span = document.createElement('span');
