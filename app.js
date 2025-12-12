@@ -406,85 +406,73 @@ function renderizarTablaCombinaciones() {
     
     combinacionesActuales.forEach((combinacion, index) => {
         const fila = document.createElement('tr');
-        if (combinacion.seleccionada) {
-            fila.classList.add('selected');
-        }
-        
-        // Checkbox
-        const celdaCheck = document.createElement('td');
+        if (combinacion.seleccionada) fila.classList.add('selected');
+
+        // 1) Checkbox
+        const tdCheck = document.createElement('td');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.checked = combinacion.seleccionada;
+        checkbox.checked = !!combinacion.seleccionada;
         checkbox.addEventListener('change', () => {
             combinacion.seleccionada = checkbox.checked;
             fila.classList.toggle('selected', checkbox.checked);
             actualizarCheckboxSeleccionarTodas();
         });
-        celdaCheck.appendChild(checkbox);
-        fila.appendChild(celdaCheck);
-        
-        // Número
-        const celdaNum = document.createElement('td');
-        celdaNum.textContent = index + 1;
-        fila.appendChild(celdaNum);
-        
-        // Números principales
-        const celdaNumeros = document.createElement('td');
+        tdCheck.appendChild(checkbox);
+        fila.appendChild(tdCheck);
+
+        // 2) Índice
+        const tdIdx = document.createElement('td');
+        tdIdx.textContent = index + 1;
+        fila.appendChild(tdIdx);
+
+        // 3) Combinación (números o referencia a color-loto)
+        const tdComb = document.createElement('td');
         if (combinacion.juego === 'color-loto') {
-            celdaNumeros.innerHTML = '<em>Ver columna Color Loto</em>';
-        } else {
-            const clase = combinacion.juego === 'baloto' ? 'baloto-number' : 'mi-loto-number';
+            tdComb.innerHTML = combinacion.combinaciones.map(c => `<span class="color-loto-cell color-${c.color}">${c.color}:${c.numero}</span>`).join(' ');
+        } else if (Array.isArray(combinacion.numeros)) {
             combinacion.numeros.forEach(num => {
                 const span = document.createElement('span');
-                span.className = clase;
+                span.className = combinacion.juego === 'baloto' ? 'baloto-number' : 'mi-loto-number';
                 span.textContent = num;
-                celdaNumeros.appendChild(span);
-            });
-        }
-        fila.appendChild(celdaNumeros);
-        
-        // Super Balota
-        const celdaSuper = document.createElement('td');
-        celdaSuper.className = 'baloto-only';
-        if (combinacion.juego === 'baloto') {
-            const span = document.createElement('span');
-            span.className = 'super-balota';
-            span.textContent = combinacion.superBalota;
-            celdaSuper.appendChild(span);
-        } else {
-            celdaSuper.innerHTML = '-';
-        }
-        fila.appendChild(celdaSuper);
-        
-        // Color Loto
-        const celdaColor = document.createElement('td');
-        celdaColor.className = 'color-loto-only';
-        if (combinacion.juego === 'color-loto') {
-            combinacion.combinaciones.forEach(comb => {
-                const span = document.createElement('span');
-                span.className = `color-loto-cell color-${comb.color}`;
-                span.textContent = `${comb.color}: ${comb.numero}`;
-                celdaColor.appendChild(span);
+                tdComb.appendChild(span);
             });
         } else {
-            celdaColor.innerHTML = '-';
+            tdComb.textContent = '-';
         }
-        fila.appendChild(celdaColor);
-        
-        // Puntuación
-        const celdaPunt = document.createElement('td');
-        celdaPunt.textContent = calcularPuntuacion(combinacion);
-        celdaPunt.style.fontWeight = 'bold';
-        fila.appendChild(celdaPunt);
+        fila.appendChild(tdComb);
 
-        // Probabilidad
-        const celdaProb = document.createElement('td');
-        const probabilidad = calcularProbabilidadIndividual(combinacion);
-        celdaProb.textContent = probabilidad + '%';
-        celdaProb.style.fontWeight = 'bold';
-        celdaProb.style.color = probabilidad > 15 ? '#2ecc71' : probabilidad > 10 ? '#f39c12' : '#e74c3c';
-        fila.appendChild(celdaProb);
-        
+        // 4) Super Balota (baloto-only)
+        const tdSuper = document.createElement('td');
+        tdSuper.className = 'baloto-only';
+        tdSuper.textContent = combinacion.juego === 'baloto' && combinacion.superBalota ? combinacion.superBalota : '-';
+        fila.appendChild(tdSuper);
+
+        // 5) Color Loto column (color-loto-only)
+        const tdColor = document.createElement('td');
+        tdColor.className = 'color-loto-only';
+        if (combinacion.juego === 'color-loto') {
+            tdColor.innerHTML = combinacion.combinaciones.map(c => `${c.color}:${c.numero}`).join(', ');
+        } else {
+            tdColor.textContent = '-';
+        }
+        fila.appendChild(tdColor);
+
+        // 6) Puntuación
+        const tdPunt = document.createElement('td');
+        const puntuacion = calcularPuntuacion(combinacion);
+        tdPunt.textContent = (puntuacion !== undefined && puntuacion !== null) ? puntuacion : '-';
+        tdPunt.style.fontWeight = 'bold';
+        fila.appendChild(tdPunt);
+
+        // 7) Probabilidad
+        const tdProb = document.createElement('td');
+        const probabilidad = parseFloat(calcularProbabilidadIndividual(combinacion));
+        tdProb.textContent = !isNaN(probabilidad) ? probabilidad.toFixed(2) + '%' : '-';
+        tdProb.style.fontWeight = 'bold';
+        if (!isNaN(probabilidad)) tdProb.style.color = probabilidad > 15 ? '#2ecc71' : probabilidad > 10 ? '#f39c12' : '#e74c3c';
+        fila.appendChild(tdProb);
+
         elementos.cuerpoTabla.appendChild(fila);
     });
     
