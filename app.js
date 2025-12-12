@@ -445,7 +445,14 @@ function renderizarTablaCombinaciones() {
         // 4) Super Balota (baloto-only)
         const tdSuper = document.createElement('td');
         tdSuper.className = 'baloto-only';
-        tdSuper.textContent = combinacion.juego === 'baloto' && combinacion.superBalota ? combinacion.superBalota : '-';
+        if (combinacion.juego === 'baloto' && combinacion.superBalota) {
+            const spanSuper = document.createElement('span');
+            spanSuper.className = 'super-balota';
+            spanSuper.textContent = combinacion.superBalota;
+            tdSuper.appendChild(spanSuper);
+        } else {
+            tdSuper.textContent = '-';
+        }
         fila.appendChild(tdSuper);
 
         // 5) Color Loto column (color-loto-only)
