@@ -479,7 +479,7 @@
         <header>
             <h1>🎰 Generador de Combinaciones</h1>
             <div class="header-controls">
-                <button id="toggle-dark-mode" title="Alternar modo oscuro">🌙</button>
+                <button id="themeToggle" title="Alternar modo oscuro"><span id="themeIcon">🌙</span></button>
                 <button id="ver-historial" title="Ver histórico de combinaciones">📋 Histórico</button>
             </div>
         </header>
@@ -549,7 +549,7 @@
                 </div>
                 <div>
                     <label>Número más frecuente:</label>
-                    <strong id="numero-frecuente">-</strong>
+                    <strong id="mejor-frecuencia">-</strong>
                 </div>
                 <div>
                     <label>Probabilidad promedio:</label>
@@ -561,9 +561,9 @@
             </div>
         </div>
 
-        <div id="probability-info" style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <div id="probabilityPanel" style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
             <h2>Información de Probabilidades</h2>
-            <div id="probability-content" class="probability-content"></div>
+            <div id="probabilityContent" class="probability-content"></div>
         </div>
     </div>
 
@@ -573,8 +573,8 @@
         <div id="contenido-historico">
             <h2>Histórico de Combinaciones</h2>
             <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <button id="exportar-json">📤 Exportar JSON</button>
-                <button id="importar-json">📥 Importar JSON</button>
+                <button id="export-historico">📤 Exportar JSON</button>
+                <button id="import-historico">📥 Importar JSON</button>
                 <input id="import-file" type="file" accept="application/json" class="hidden" />
                 <button id="limpiar-historico">Limpiar Histórico</button>
                 <button id="cerrar-historico">Cerrar</button>
