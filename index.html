@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generador avanzado de combinaciones para juegos de lotería como Baloto, Mi Loto y Color Loto">
+    <title>Generador de Combinaciones - Sistema Avanzado</title>
+    
+    <!-- Preconexión para mejorar performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <!-- Hojas de estilo -->
+    <link rel="stylesheet" href="styles/main.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎰</text></svg>">
+    
+    <!-- Estilos críticos inline para render inicial -->
+    <style>
+        /* Solo lo mínimo necesario para render inicial */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --bg-color: #f5f7fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            opacity: 0.7;
+            cursor: wait !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content link para accesibilidad -->
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+    <div class="container">
+        <header class="main-header" role="banner">
+            <div class="header-content">
+                <h1 class="site-title">
+                    <span class="site-icon" aria-hidden="true">🎰</span>
+                    Generador de Combinaciones
+                </h1>
+                <div class="header-controls">
+                    <button id="themeToggle" class="btn-icon" 
+                            title="Alternar modo oscuro/claro"
+                            aria-label="Cambiar tema de color">
+                        <span id="themeIcon" class="theme-icon" aria-hidden="true">🌙</span>
+                    </button>
+                    <button id="ver-historial" class="btn-secondary btn-icon"
+                            title="Ver histórico de combinaciones">
+                        <span class="btn-icon-text" aria-hidden="true">📋</span>
+                        <span class="btn-label">Histórico</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="main-content" role="main">
+            <!-- Sección de controles -->
+            <section class="controls-section card" aria-labelledby="controles-titulo">
+                <h2 id="controles-titulo" class="section-title">Configuración del Generador</h2>
+                
+                <div class="controls-grid">
+                    <div class="form-group">
+                        <label for="juego" class="form-label">Tipo de Juego</label>
+                        <select id="juego" class="form-select" 
+                                aria-describedby="juego-desc">
+                            <option value="baloto">Baloto</option>
+                            <option value="mi-loto">Mi Loto</option>
+                            <option value="color-loto">Color Loto</option>
+                        </select>
+                        <small id="juego-desc" class="form-description">
+                            Selecciona el juego para el que quieres generar combinaciones
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="combinaciones" class="form-label">Cantidad</label>
+                        <input type="number" id="combinaciones" class="form-input" 
+                               value="5" min="1" max="100" step="1"
+                               aria-describedby="combinaciones-desc">
+                        <small id="combinaciones-desc" class="form-description">
+                            Número de combinaciones a generar (1-100)
+                        </small>
+                    </div>
+                </div>
+
+                <div class="action-buttons" role="toolbar" aria-label="Acciones principales">
+                    <button id="generar" class="btn-primary">
+                        <span class="btn-icon-text" aria-hidden="true">🎲</span>
+                        <span>Generar Combinaciones</span>
+                    </button>
+                    <button id="guardar" class="btn-success">
+                        <span class="btn-icon-text" aria-hidden="true">💾</span>
+                        <span>Guardar en Histórico</span>
+                    </button>
+                    <button id="seleccionar-mejores" class="btn-info">
+                        <span class="btn-icon-text" aria-hidden="true">⭐</span>
+                        <span>Seleccionar Mejores</span>
+                    </button>
+                    <button id="eliminar-seleccionados" class="btn-danger">
+                        <span class="btn-icon-text" aria-hidden="true">🗑️</span>
+                        <span>Eliminar Seleccionados</span>
+                    </button>
+                    <button id="limpiar" class="btn-warning">
+                        <span class="btn-icon-text" aria-hidden="true">🧹</span>
+                        <span>Limpiar Todo</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Reglas del juego (dinámico) -->
+            <section id="reglas-juego" class="rules-section card" 
+                     role="region" aria-labelledby="reglas-titulo" hidden>
+                <h2 id="reglas-titulo" class="section-title">Reglas del Juego</h2>
+                <div id="reglas-contenido"></div>
+            </section>
+
+            <!-- Tabla de resultados -->
+            <section class="results-section" aria-labelledby="resultados-titulo">
+                <div class="section-header">
+                    <h2 id="resultados-titulo" class="section-title">
+                        <span class="section-icon" aria-hidden="true">📊</span>
+                        Combinaciones Generadas
+                    </h2>
+                    <div class="select-all-container">
+                        <input type="checkbox" id="seleccionar-todas" 
+                               class="checkbox-lg"
+                               aria-label="Seleccionar todas las combinaciones">
+                        <label for="seleccionar-todas" class="checkbox-label">
+                            Seleccionar todas
+                        </label>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table id="tabla-resultados" class="data-table" 
+                               aria-describedby="tabla-desc">
+                            <caption class="visually-hidden">
+                                Lista de combinaciones generadas con sus estadísticas
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="col-checkbox">
+                                        <span class="visually-hidden">Seleccionar</span>
+                                    </th>
+                                    <th scope="col" class="col-index">#</th>
+                                    <th scope="col" class="col-combinacion">Combinación</th>
+                                    <th scope="col" class="col-extra baloto-only">Super Balota</th>
+                                    <th scope="col" class="col-extra color-loto-only">Color</th>
+                                    <th scope="col" class="col-puntuacion">Puntuación</th>
+                                    <th scope="col" class="col-probabilidad">Probabilidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-tabla">
+                                <!-- Filas generadas dinámicamente -->
+                                <tr class="empty-state">
+                                    <td colspan="7">
+                                        <div class="empty-message">
+                                            <p>No hay combinaciones generadas aún.</p>
+                                            <p>Haz clic en "Generar Combinaciones" para comenzar.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Panel de estadísticas -->
+            <section class="stats-section card" aria-labelledby="stats-titulo">
+                <h2 id="stats-titulo" class="section-title">
+                    <span class="section-icon" aria-hidden="true">📈</span>
+                    Estadísticas
+                </h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-combinaciones" aria-live="polite">0</div>
+                        <div class="stat-label">Combinaciones Generadas</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-lotes" aria-live="polite">0</div>
+                        <div class="stat-label">Lotes Guardados</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="mejor-frecuencia" aria-live="polite">-</div>
+                        <div class="stat-label">Número Más Frecuente</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="probabilidad-promedio" aria-live="polite">-</div>
+                        <div class="stat-label">Probabilidad Promedio</div>
+                    </div>
+                </div>
+                
+                <div class="stats-actions">
+                    <button id="limpiar-estadisticas" class="btn-secondary btn-sm">
+                        <span class="btn-icon-text" aria-hidden="true">🔄</span>
+                        Reiniciar Estadísticas
+                    </button>
+                </div>
+            </section>
+
+            <!-- Panel de probabilidades -->
+            <section id="probabilityPanel" class="probability-section card" 
+                     aria-labelledby="probability-titulo">
+                <h2 id="probability-titulo" class="section-title">
+                    <span class="section-icon" aria-hidden="true">🎯</span>
+                    Información de Probabilidades
+                </h2>
+                <div id="probabilityContent" class="probability-grid"></div>
+            </section>
+        </main>
+
+        <footer class="main-footer" role="contentinfo">
+            <div class="footer-content">
+                <p class="footer-text">
+                    Generador de Combinaciones © 2024 - 
+                    <span class="version">v1.0.0</span>
+                </p>
+                <p class="footer-disclaimer">
+                    Esta herramienta es para entretenimiento. Los resultados son aleatorios.
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Sistema de notificaciones -->
+    <div id="notification-area" class="notification-area" 
+         role="region" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Modal del Histórico -->
+    <div id="historico-modal" class="modal" role="dialog" 
+         aria-labelledby="modal-titulo" aria-modal="true" hidden>
+        <div class="modal-overlay" data-close-modal></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 id="modal-titulo" class="modal-title">
+                    <span class="modal-icon" aria-hidden="true">📋</span>
+                    Histórico de Combinaciones
+                </h2>
+                <button class="modal-close" id="cerrar-historico" 
+                        aria-label="Cerrar modal">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="modal-actions">
+                    <button id="export-historico" class="btn-success">
+                        <span class="btn-icon-text" aria-hidden="true">📤</span>
+                        Exportar JSON
+                    </button>
+                    <button id="import-historico" class="btn-info">
+                        <span class="btn-icon-text" aria-hidden="true">📥</span>
+                        Importar JSON
+                    </button>
+                    <input id="import-file" type="file" 
+                           accept="application/json,.json" 
+                           class="visually-hidden" />
+                    <button id="limpiar-historico" class="btn-danger">
+                        <span class="btn-icon-text" aria-hidden="true">🗑️</span>
+                        Limpiar Histórico
+                    </button>
+                </div>
+                
+                <div id="historico-contenido" class="historico-content">
+                    <!-- Contenido dinámico -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js" defer></script>
+    <script src="js/generador.js" defer></script>
+    <script src="js/estadisticas.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/app.js" defer></script>
+</body>
+</html>

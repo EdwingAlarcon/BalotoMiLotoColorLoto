@@ -236,28 +236,34 @@ function calcularProbabilidadIndividual(combinacion) {
 
 // Función para actualizar estadísticas
 function actualizarEstadisticas() {
-    elementos.totalCombinaciones.textContent = estadisticas.totalGeneradas;
-    elementos.totalLotes.textContent = estadisticas.lotesGuardados;
-    
-    // Calcular número más frecuente
-    let mejorNum = '-';
-    let maxFreq = 0;
-    for (const [num, freq] of Object.entries(estadisticas.frecuenciaNumeros)) {
-        if (freq > maxFreq) {
-            maxFreq = freq;
-            mejorNum = num;
+    try {
+        if (!elementos.totalCombinaciones) return;
+        
+        elementos.totalCombinaciones.textContent = estadisticas.totalGeneradas;
+        elementos.totalLotes.textContent = estadisticas.lotesGuardados;
+        
+        // Calcular número más frecuente
+        let mejorNum = '-';
+        let maxFreq = 0;
+        for (const [num, freq] of Object.entries(estadisticas.frecuenciaNumeros)) {
+            if (freq > maxFreq) {
+                maxFreq = freq;
+                mejorNum = num;
+            }
         }
-    }
-    elementos.mejorFrecuencia.textContent = mejorNum;
-    
-    // Calcular probabilidad promedio de combinaciones actuales
-    if (combinacionesActuales.length > 0) {
-        const probTotal = combinacionesActuales.reduce((sum, comb) => 
-            sum + parseFloat(calcularProbabilidadIndividual(comb)), 0);
-        const probPromedio = (probTotal / combinacionesActuales.length).toFixed(2);
-        elementos.probabilidadPromedio.textContent = probPromedio + '%';
-    } else {
-        elementos.probabilidadPromedio.textContent = '0%';
+        elementos.mejorFrecuencia.textContent = mejorNum;
+        
+        // Calcular probabilidad promedio de combinaciones actuales
+        if (combinacionesActuales.length > 0) {
+            const probTotal = combinacionesActuales.reduce((sum, comb) => 
+                sum + parseFloat(calcularProbabilidadIndividual(comb)), 0);
+            const probPromedio = (probTotal / combinacionesActuales.length).toFixed(2);
+            elementos.probabilidadPromedio.textContent = probPromedio + '%';
+        } else {
+            elementos.probabilidadPromedio.textContent = '0%';
+        }
+    } catch (e) {
+        console.error('Error actualizando estadísticas:', e);
     }
 }
 
@@ -436,20 +442,26 @@ function generarCombinacionesColorLoto() {
 
 // Función para renderizar la tabla con probabilidades
 function renderizarTablaCombinaciones() {
-    elementos.cuerpoTabla.innerHTML = '';
-    
-    if (combinacionesActuales.length === 0) {
-        elementos.cuerpoTabla.innerHTML = `
-            <tr>
-                <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
-                    No hay combinaciones generadas
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    combinacionesActuales.forEach((combinacion, index) => {
+    try {
+        if (!elementos.cuerpoTabla) {
+            console.error('ERROR: cuerpoTabla es null');
+            return;
+        }
+        
+        elementos.cuerpoTabla.innerHTML = '';
+        
+        if (combinacionesActuales.length === 0) {
+            elementos.cuerpoTabla.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                        No hay combinaciones generadas
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        combinacionesActuales.forEach((combinacion, index) => {
         const fila = document.createElement('tr');
         if (combinacion.seleccionada) fila.classList.add('selected');
 
@@ -536,9 +548,12 @@ function renderizarTablaCombinaciones() {
         fila.appendChild(tdProb);
 
         elementos.cuerpoTabla.appendChild(fila);
-    });
-    
-    actualizarCheckboxSeleccionarTodas();
+        });
+        
+        actualizarCheckboxSeleccionarTodas();
+    } catch (e) {
+        console.error('Error renderizando tabla:', e);
+    }
 }
 
 // Función para calcular puntuación
