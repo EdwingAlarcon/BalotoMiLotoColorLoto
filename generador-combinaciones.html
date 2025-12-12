@@ -31,9 +31,9 @@
         .notification.warning { background: var(--warning-color); color: white; }
         .notification.info { background: var(--secondary-color); color: white; }
         .hidden { display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
         thead { background: #f0f0f0; }
-        th, td { border: 1px solid #ddd; padding: 12px 8px; text-align: center; vertical-align: middle; }
+        th, td { border: 1px solid #ddd; padding: 12px 8px; text-align: center; vertical-align: middle; word-wrap: break-word; overflow-wrap: break-word; }
         th { font-weight: bold; }
         tr:hover { background: #f9f9f9; }
         .selected { background: #f0f8ff !important; }
