@@ -25,6 +25,122 @@
         th, td { border:1px solid #ddd; padding:8px; text-align:center; }
         .selected { background:#f0f8ff; }
         .probability-item { display:inline-block; margin-right:12px; }
+        .baloto-number { display:inline-block; background: var(--baloto-yellow); padding:4px 8px; margin:2px; border-radius:4px; }
+        .mi-loto-number { display:inline-block; background: var(--mi-loto-azul); color:#fff; padding:4px 8px; margin:2px; border-radius:4px; }
+        .color-loto-cell { display:inline-block; padding:4px 8px; margin:2px; border-radius:4px; color:#fff; }
+        .color-amarillo { background:#FFD700; color:#000; }
+        .color-azul { background:#3498db; }
+        .color-rojo { background:#e74c3c; }
+        .color-verde { background:#2ecc71; }
+        .color-blanco { background:#bdc3c7; color:#000; }
+        .color-negro { background:#34495e; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Generador de Combinaciones</h1>
+        <div>
+            <button id="themeToggle"><span id="themeIcon">🌙</span> Modo</button>
+        </div>
+    </header>
+
+    <section class="controls">
+        <label for="juego">Juego:</label>
+        <select id="juego">
+            <option value="baloto">Baloto</option>
+            <option value="mi-loto">Mi Loto</option>
+            <option value="color-loto">Color Loto</option>
+        </select>
+
+        <label for="combinaciones">Cantidad:</label>
+        <input id="combinaciones" type="number" min="1" max="200" value="5" />
+
+        <button id="generar">Generar Combinaciones</button>
+        <button id="guardar">Guardar en Histórico</button>
+        <button id="limpiar">Limpiar</button>
+        <button id="seleccionar-mejores">Seleccionar Mejores</button>
+        <button id="eliminar-seleccionados">Eliminar Seleccionados</button>
+        <button id="ver-historial">Ver Histórico</button>
+    </section>
+
+    <section id="probabilityPanel">
+        <div id="probabilityContent"></div>
+    </section>
+
+    <section>
+        <table id="tabla-resultados">
+            <thead>
+                <tr>
+                    <th><input id="seleccionar-todas" type="checkbox" /></th>
+                    <th>#</th>
+                    <th>Combinación</th>
+                    <th class="baloto-only">Super Balota</th>
+                    <th class="color-loto-only">Color Loto</th>
+                    <th>Puntuación</th>
+                    <th>Probabilidad</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-tabla">
+                <tr><td colspan="7">No hay combinaciones generadas</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <aside style="margin-top:12px;">
+        <div>Totales: <span id="total-combinaciones">0</span> generadas • Lotes guardados: <span id="total-lotes">0</span></div>
+        <div>Mejor frecuencia: <span id="mejor-frecuencia">-</span></div>
+        <div>Probabilidad promedio: <span id="probabilidad-promedio">0%</span></div>
+    </aside>
+
+    <div id="notification" class="hidden"></div>
+
+    <section id="seccion-historico" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2>Histórico</h2>
+            <div>
+                <button id="export-historico">📤 Exportar JSON</button>
+                <button id="import-historico">📥 Importar JSON</button>
+                <input id="import-file" type="file" accept="application/json" class="hidden" />
+                <button id="limpiar-historico">Limpiar Histórico</button>
+                <button id="cerrar-historico">Cerrar</button>
+            </div>
+        </div>
+        <div id="contenido-historico"></div>
+    </section>
+
+    <div id="reglas-juego"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Combinaciones - Sistema Avanzado</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --baloto-yellow: #FFD700;
+            --baloto-red: #DC143C;
+            --mi-loto-azul: #87CEEB;
+            --bg-color: #f5f7fa;
+        }
+        body { font-family: Arial, Helvetica, sans-serif; background: var(--bg-color); color: var(--primary-color); margin: 0; padding: 16px; }
+        header { display:flex; justify-content:space-between; align-items:center; }
+        .controls { display:flex; gap:8px; align-items:center; margin:12px 0; }
+        .notification { padding:8px 12px; border-radius:6px; display:inline-block; }
+        .hidden { display:none; }
+        table { width:100%; border-collapse:collapse; }
+        th, td { border:1px solid #ddd; padding:8px; text-align:center; }
+        .selected { background:#f0f8ff; }
+        .probability-item { display:inline-block; margin-right:12px; }
     </style>
     </head>
 
