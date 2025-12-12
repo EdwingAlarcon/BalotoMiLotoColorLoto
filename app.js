@@ -91,14 +91,14 @@ function configurarEventListeners() {
 
 // Función para el modo oscuro/claro
 function toggleTema() {
-    const currentTheme = document.body.getAttribute('data-theme');
+    const currentTheme = document.documentElement.getAttribute('data-theme');
     if (currentTheme === 'dark') {
-        document.body.removeAttribute('data-theme');
+        document.documentElement.removeAttribute('data-theme');
         elementos.themeIcon.textContent = '🌙';
         elementos.themeToggle.innerHTML = '<span id="themeIcon">🌙</span> Modo Oscuro';
         localStorage.setItem('theme', 'light');
     } else {
-        document.body.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
         elementos.themeIcon.textContent = '☀️';
         elementos.themeToggle.innerHTML = '<span id="themeIcon">☀️</span> Modo Claro';
         localStorage.setItem('theme', 'dark');
@@ -108,7 +108,7 @@ function toggleTema() {
 function cargarTema() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'dark') {
-        document.body.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
         elementos.themeIcon.textContent = '☀️';
         elementos.themeToggle.innerHTML = '<span id="themeIcon">☀️</span> Modo Claro';
     }
