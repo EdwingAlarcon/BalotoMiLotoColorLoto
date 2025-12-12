@@ -383,6 +383,7 @@ function generarCombinaciones() {
         localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
 
         renderizarTablaCombinaciones();
+        actualizarVisibilidadColumnas();
         actualizarEstadisticas();
         boton.classList.remove('loading');
         mostrarNotificacion(`${generadas} combinaciones generadas con éxito`, 'success');
