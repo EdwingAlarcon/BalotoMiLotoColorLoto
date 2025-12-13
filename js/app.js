@@ -104,6 +104,10 @@ function mostrarReglasJuegoSimple() {
     
     if (!reglasContenido) return;
     
+    // LIMPIAR RESULTADOS AL CAMBIAR DE JUEGO
+    AppState.combinaciones = [];
+    actualizarTablaSimple();
+    actualizarEstadisticasSimple();
     let reglasHTML = '';
     
     if (juego === 'baloto') {

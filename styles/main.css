@@ -1,3 +1,4 @@
+/* ===== MAIN.CSS - CORREGIDO ===== */
 /* Importar todas las hojas de estilo */
 @import url('base.css');
 @import url('components.css');
@@ -32,27 +33,6 @@
     to { opacity: 1; }
 }
 
-/* Columnas condicionales para juegos específicos */
-.baloto-only,
-.color-loto-only {
-    display: none;
-}
-
-.baloto-mode .baloto-only,
-.color-loto-mode .color-loto-only {
-    display: table-cell;
-}
-
-/* Combinaciones en fila */
-.combinacion-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-}
-
 /* Tooltip */
 .tooltip {
     position: relative;
@@ -63,7 +43,7 @@
     visibility: hidden;
     width: 200px;
     background-color: var(--primary-color);
-    color: white;
+    color: white !important;
     text-align: center;
     border-radius: var(--radius-sm);
     padding: var(--space-sm);
@@ -149,6 +129,13 @@
 .baloto-mode .baloto-only,
 .color-loto-mode .color-loto-only {
     display: table-cell;
+}
+
+/* ===== SOLUCIÓN DE EMERGENCIA PARA CONTRASTE ===== */
+[data-theme="dark"] .card *:not(.btn):not(.number-ball):not(.badge),
+[data-theme="dark"] .rules-section *:not(.btn):not(.number-ball):not(.badge),
+[data-theme="dark"] .stats-section *:not(.btn):not(.number-ball):not(.badge) {
+    color: #e0e0e0 !important;
 }
 
 /* Estilos de emergencia si CSS no carga */
