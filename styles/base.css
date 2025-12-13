@@ -1,81 +1,76 @@
-/* ===== BASE.CSS - CORREGIDO ===== */
-/* Reset y estilos base */
-
-* {
+/* ===== RESET Y BASE ===== */
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 
+                 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 :root {
-    /* Variables de color (modo claro) */
+    /* Colores principales */
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
     --success-color: #2ecc71;
-    --danger-color: #e74c3c;
     --warning-color: #f39c12;
-    --info-color: #1abc9c;
+    --danger-color: #e74c3c;
+    --info-color: #17a2b8;
     
-    /* Variables de fondo */
+    /* Colores de juegos */
+    --baloto-color: #FFD700;
+    --super-balota-color: #DC143C;
+    --mi-loto-color: #003d7a;
+    
+    /* Colores para Color Loto */
+    --color-amarillo: #f4c430;
+    --color-azul: #003d7a;
+    --color-rojo: #dc3545;
+    --color-verde: #28a745;
+    --color-blanco: #f8f9fa;
+    --color-negro: #212529;
+    
+    /* Colores de fondo y texto */
     --bg-color: #f5f7fa;
     --bg-card: #ffffff;
+    --text-color: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --border-color: #e0e0e0;
     
-    /* Variables de texto */
-    --text-color: #333333;
-    --text-light: #666666;
+    /* Sombras */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     
-    /* Variables de espaciado */
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
-    
-    /* Variables de radio */
+    /* Bordes */
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 12px;
     
-    /* Variables de sombra */
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
-    --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
-    
-    /* Variables de borde */
-    --border-color: #dee2e6;
+    /* Espaciado */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
 }
 
-/* ===== MODO OSCURO ===== */
-[data-theme="dark"] {
-    /* Variables de color (modo oscuro) */
-    --primary-color: #3498db;
-    --secondary-color: #2c3e50;
-    --success-color: #27ae60;
-    --danger-color: #c0392b;
-    --warning-color: #f1c40f;
-    --info-color: #16a085;
-    
-    /* Variables de fondo */
-    --bg-color: #1a1a1a;
-    --bg-card: #2d2d2d;
-    
-    /* Variables de texto - MEJOR CONTRASTE */
-    --text-color: #e0e0e0 !important;
-    --text-light: #aaaaaa !important;
-    
-    /* Variables de borde */
-    --border-color: #444444;
-}
-
-body {
-    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    min-height: 100vh;
-    transition: background-color 0.3s, color 0.3s;
-}
-
+/* ===== TIPOGRAFÍA ===== */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     line-height: 1.3;
@@ -83,25 +78,69 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-color);
 }
 
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4,
-[data-theme="dark"] h5,
-[data-theme="dark"] h6 {
-    color: #ffffff !important;
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+p {
+    margin-bottom: var(--space-md);
 }
 
 a {
     color: var(--secondary-color);
     text-decoration: none;
-    transition: color 0.3s;
+    transition: color 0.2s ease;
 }
 
 a:hover {
     color: var(--primary-color);
 }
 
+/* ===== UTILIDADES ===== */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.mt-1 { margin-top: var(--space-sm); }
+.mt-2 { margin-top: var(--space-md); }
+.mt-3 { margin-top: var(--space-lg); }
+.mb-1 { margin-bottom: var(--space-sm); }
+.mb-2 { margin-bottom: var(--space-md); }
+.mb-3 { margin-bottom: var(--space-lg); }
+
+/* ===== LAYOUT BASE ===== */
 .container {
     width: 100%;
     max-width: 1200px;
@@ -109,31 +148,20 @@ a:hover {
     padding: 0 var(--space-md);
 }
 
+/* Skip link para accesibilidad */
 .skip-link {
     position: absolute;
     top: -40px;
-    left: 0;
-    background: var(--primary-color);
+    left: var(--space-md);
+    background: var(--secondary-color);
     color: white;
     padding: var(--space-sm) var(--space-md);
-    z-index: 1001;
-    border-radius: 0 0 var(--radius-sm) 0;
+    border-radius: var(--radius-sm);
     text-decoration: none;
+    z-index: 9999;
+    transition: top 0.3s ease;
 }
 
 .skip-link:focus {
-    top: 0;
-}
-
-/* Asegurar que todo el texto sea visible en modo oscuro */
-[data-theme="dark"] {
-    color: #e0e0e0 !important;
-}
-
-[data-theme="dark"] p,
-[data-theme="dark"] span,
-[data-theme="dark"] div,
-[data-theme="dark"] td,
-[data-theme="dark"] li {
-    color: #e0e0e0 !important;
+    top: var(--space-md);
 }
