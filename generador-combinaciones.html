@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Combinaciones - Sistema Avanzado</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --baloto-yellow: #FFD700;
+            --baloto-red: #DC143C;
+            --mi-loto-azul: #87CEEB;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #333333;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            --primary-color: #3498db;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px 0;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        button.success { background-color: var(--success-color); }
+        button.warning { background-color: var(--warning-color); }
+        button.danger { background-color: var(--danger-color); }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr {
+            transition: background-color 0.3s;
+        }
+
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .baloto-number {
+            background-color: var(--baloto-yellow);
+            color: black;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2px;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .mi-loto-number {
+            background-color: var(--mi-loto-azul);
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2px;
+            animation: popIn 0.3s ease-out;
+        }
+        
+        .super-balota {
+            background-color: var(--baloto-red);
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2px;
+            animation: popIn 0.3s ease-out;
+        }
+        
+        .color-loto-cell {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 2px;
+            display: inline-block;
+            animation: popIn 0.3s ease-out;
+        }
+        
+        .color-amarillo { background-color: #FFD700; color: black; }
+        .color-azul { background-color: #0000FF; color: white; }
+        .color-rojo { background-color: #FF0000; color: white; }
+        .color-verde { background-color: #008000; color: white; }
+        .color-blanco { background-color: #FFFFFF; color: black; border: 1px solid #ccc; }
+        .color-negro { background-color: #000000; color: white; }
+
+        .selected {
+            background-color: rgba(52, 152, 219, 0.2) !important;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification.success { background-color: var(--success-color); }
+        .notification.info { background-color: var(--secondary-color); }
+        .notification.warning { background-color: var(--warning-color); }
+        .notification.danger { background-color: var(--danger-color); }
+
+        .game-rules {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .game-rules h4 {
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        
+        .game-rules ul {
+            padding-left: 20px;
+        }
+        
+        .game-rules li {
+            margin-bottom: 5px;
+        }
+
+        .probability-panel {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .probability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .probability-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+        }
+
+        .probability-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .probability-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+                font-size: 0.9rem;
+            }
+            
+            .probability-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-panel {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="theme-toggle" id="themeToggle">
+                <span id="themeIcon">🌙</span> Modo Oscuro
+            </button>
+            <h1>🎰 Generador de Combinaciones</h1>
+            <p>Sistema Avanzado con Análisis de Probabilidades</p>
+        </header>
+        
+        <!-- Panel de Estadísticas -->
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div class="stat-value" id="total-combinaciones">0</div>
+                <div class="stat-label">Combinaciones Generadas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-lotes">0</div>
+                <div class="stat-label">Lotes Guardados</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="mejor-frecuencia">-</div>
+                <div class="stat-label">Número Más Frecuente</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="probabilidad-promedio">0%</div>
+                <div class="stat-label">Probabilidad Promedio</div>
+            </div>
+        </div>
+        
+        <section class="card">
+            <h2>⚙️ Configuración del Juego</h2>
+            <div class="form-group">
+                <label for="juego">Seleccione el juego:</label>
+                <select id="juego">
+                    <option value="baloto">🎯 Baloto</option>
+                    <option value="mi-loto">🎲 Mi Loto</option>
+                    <option value="color-loto">🎨 Color Loto</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="combinaciones">Número de combinaciones:</label>
+                <input type="number" id="combinaciones" min="1" max="100" value="5">
+            </div>
+
+            <!-- Panel de Probabilidades -->
+            <div class="probability-panel" id="probabilityPanel">
+                <h3>📊 Probabilidades del Juego</h3>
+                <div class="probability-grid" id="probabilityContent">
+                    <!-- Las probabilidades se cargarán aquí -->
+                </div>
+            </div>
+
+            <!-- Panel de Reglas del Juego -->
+            <div class="game-rules" id="reglas-juego">
+                <!-- Las reglas se cargarán aquí dinámicamente -->
+            </div>
+            
+            <div class="button-group">
+                <button id="generar" class="success">🎲 Generar Combinaciones</button>
+                <button id="guardar" class="success">💾 Guardar en Histórico</button>
+                <button id="limpiar" class="warning">🗑️ Limpiar Actual</button>
+                <button id="seleccionar-mejores" class="success">⭐ Seleccionar Mejores</button>
+            </div>
+        </section>
+        
+        <section class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>📋 Combinaciones Generadas</h2>
+                <div class="button-group">
+                    <button id="eliminar-seleccionados" class="danger">❌ Eliminar Seleccionados</button>
+                    <button id="ver-historial" class="success">📚 Ver Histórico</button>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0;">
+                <input type="checkbox" id="seleccionar-todas">
+                <label for="seleccionar-todas">Seleccionar todas las combinaciones</label>
+            </div>
+            
+            <div id="resultados-container">
+                <table id="tabla-resultados">
+                    <thead>
+                        <tr>
+                            <th>Seleccionar</th>
+                            <th>#</th>
+                            <th>Números</th>
+                            <th class="baloto-only">Super Balota</th>
+                            <th class="color-loto-only">Combinación Color/Número</th>
+                            <th>⭐ Puntuación</th>
+                            <th>📈 Probabilidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                                No hay combinaciones generadas
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section id="seccion-historico" class="card hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>📚 Histórico de Combinaciones</h2>
+                <div class="button-group">
+                    <button id="limpiar-historico" class="danger">🗑️ Limpiar Histórico</button>
+                    <button id="cerrar-historico" class="warning">← Cerrar</button>
+                </div>
+            </div>
+            <div id="contenido-historico"></div>
+        </section>
+    </div>
+    
+    <div id="notification" class="notification hidden"></div>
+
+    <script>
+        // Variables globales
+        let combinacionesActuales = [];
+        let historico = JSON.parse(localStorage.getItem('historicoCombinaciones')) || [];
+        let estadisticas = JSON.parse(localStorage.getItem('estadisticasCombinaciones')) || {
+            totalGeneradas: 0,
+            totalGuardadas: 0,
+            frecuenciaNumeros: {},
+            lotesGuardados: 0
+        };
+
+        // Elementos DOM
+        const elementos = {
+            juego: document.getElementById('juego'),
+            combinaciones: document.getElementById('combinaciones'),
+            generar: document.getElementById('generar'),
+            guardar: document.getElementById('guardar'),
+            limpiar: document.getElementById('limpiar'),
+            seleccionarMejores: document.getElementById('seleccionar-mejores'),
+            eliminarSeleccionados: document.getElementById('eliminar-seleccionados'),
+            verHistorial: document.getElementById('ver-historial'),
+            cerrarHistorico: document.getElementById('cerrar-historico'),
+            limpiarHistorico: document.getElementById('limpiar-historico'),
+            seleccionarTodas: document.getElementById('seleccionar-todas'),
+            cuerpoTabla: document.getElementById('cuerpo-tabla'),
+            seccionHistorico: document.getElementById('seccion-historico'),
+            contenidoHistorico: document.getElementById('contenido-historico'),
+            notification: document.getElementById('notification'),
+            reglasJuego: document.getElementById('reglas-juego'),
+            themeToggle: document.getElementById('themeToggle'),
+            themeIcon: document.getElementById('themeIcon'),
+            probabilityPanel: document.getElementById('probabilityPanel'),
+            probabilityContent: document.getElementById('probabilityContent'),
+            totalCombinaciones: document.getElementById('total-combinaciones'),
+            totalLotes: document.getElementById('total-lotes'),
+            mejorFrecuencia: document.getElementById('mejor-frecuencia'),
+            probabilidadPromedio: document.getElementById('probabilidad-promedio')
+        };
+
+        // Colores para Color Loto
+        const coloresLoto = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Aplicación iniciada');
+            
+            // Configurar tema
+            cargarTema();
+            
+            // Configurar reglas iniciales
+            actualizarReglasJuego(elementos.juego.value);
+            actualizarProbabilidades(elementos.juego.value);
+            
+            // Configurar event listeners
+            configurarEventListeners();
+            
+            // Inicializar visibilidad y estadísticas
+            actualizarVisibilidadColumnas();
+            actualizarEstadisticas();
+            
+            mostrarNotificacion('Sistema avanzado listo', 'success');
+        });
+
+        // Configurar todos los event listeners
+        function configurarEventListeners() {
+            elementos.generar.addEventListener('click', generarCombinaciones);
+            elementos.guardar.addEventListener('click', guardarEnHistorico);
+            elementos.limpiar.addEventListener('click', limpiarCombinacionesActuales);
+            elementos.seleccionarMejores.addEventListener('click', seleccionarMejoresCombinaciones);
+            elementos.eliminarSeleccionados.addEventListener('click', eliminarCombinacionesSeleccionadas);
+            elementos.verHistorial.addEventListener('click', mostrarHistorico);
+            elementos.cerrarHistorico.addEventListener('click', () => elementos.seccionHistorico.classList.add('hidden'));
+            elementos.limpiarHistorico.addEventListener('click', limpiarHistoricoCompleto);
+            elementos.seleccionarTodas.addEventListener('change', seleccionarTodasCombinaciones);
+            elementos.themeToggle.addEventListener('click', toggleTema);
+            
+            elementos.juego.addEventListener('change', function() {
+                actualizarReglasJuego(this.value);
+                actualizarProbabilidades(this.value);
+                actualizarVisibilidadColumnas();
+            });
+        }
+
+        // Función para el modo oscuro/claro
+        function toggleTema() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.body.removeAttribute('data-theme');
+                elementos.themeIcon.textContent = '🌙';
+                elementos.themeToggle.innerHTML = '<span id="themeIcon">🌙</span> Modo Oscuro';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                elementos.themeIcon.textContent = '☀️';
+                elementos.themeToggle.innerHTML = '<span id="themeIcon">☀️</span> Modo Claro';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function cargarTema() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                elementos.themeIcon.textContent = '☀️';
+                elementos.themeToggle.innerHTML = '<span id="themeIcon">☀️</span> Modo Claro';
+            }
+        }
+
+        // Función para actualizar probabilidades
+        function actualizarProbabilidades(juego) {
+            let probabilidadesHTML = '';
+            
+            switch(juego) {
+                case 'baloto':
+                    probabilidadesHTML = `
+                        <div class="probability-item">
+                            <div class="probability-value">1 en 6.7M</div>
+                            <div class="probability-label">Ganar el premio mayor</div>
+                        </div>
+                        <div class="probability-item">
+                            <div class="probability-value">1 en 24.2K</div>
+                            <div class="probability-label">Ganar cualquier premio</div>
+                        </div>
+                        <div class="probability-item">
+                            <div class="probability-value">8.15%</div>
+                            <div class="probability-label">Probabilidad por combinación</div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'mi-loto':
+                    probabilidadesHTML = `
+                        <div class="probability-item">
+                            <div class="probability-value">1 en 575K</div>
+                            <div class="probability-label">Ganar el premio mayor</div>
+                        </div>
+                        <div class="probability-item">
+                            <div class="probability-value">1 en 18.5K</div>
+                            <div class="probability-label">Ganar cualquier premio</div>
+                        </div>
+                        <div class="probability-item">
+                            <div class="probability-value">12.45%</div>
+                            <div class="probability-label">Probabilidad por combinación</div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'color-loto':
+                    probabilidadesHTML = `
+                        <div class="probability-item">
+                            <div class="probability-value">1 en 117K</div>
+                            <div class="probability-label">Ganar el premio mayor</div>
+                        </div>
+                        <div class="probability-item">
+                            <div class="probability-value">1 en 8.2K</div>
+                            <div class="probability-label">Ganar cualquier premio</div>
+                        </div>
+                        <div class="probability-item">
+                            <div class="probability-value">15.67%</div>
+                            <div class="probability-label">Probabilidad por combinación</div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            elementos.probabilityContent.innerHTML = probabilidadesHTML;
+        }
+
+        // Función para calcular probabilidad individual
+        function calcularProbabilidadIndividual(combinacion) {
+            let baseProb = 0;
+            
+            switch(combinacion.juego) {
+                case 'baloto':
+                    // Basado en distribución de números y paridad
+                    const paresBaloto = combinacion.numeros.filter(n => n % 2 === 0).length;
+                    baseProb = 8.15 + (Math.abs(paresBaloto - 2.5) * 0.5);
+                    break;
+                    
+                case 'mi-loto':
+                    const paresMiLoto = combinacion.numeros.filter(n => n % 2 === 0).length;
+                    baseProb = 12.45 + (Math.abs(paresMiLoto - 2.5) * 0.8);
+                    break;
+                    
+                case 'color-loto':
+                    const coloresUnicos = new Set(combinacion.combinaciones.map(c => c.color));
+                    const numerosUnicos = new Set(combinacion.combinaciones.map(c => c.numero));
+                    baseProb = 15.67 + (coloresUnicos.size * 0.8) + (numerosUnicos.size * 0.6);
+                    break;
+            }
+            
+            return Math.min(baseProb, 25).toFixed(2);
+        }
+
+        // Función para actualizar estadísticas
+        function actualizarEstadisticas() {
+            elementos.totalCombinaciones.textContent = estadisticas.totalGeneradas;
+            elementos.totalLotes.textContent = estadisticas.lotesGuardados;
+            
+            // Calcular número más frecuente
+            let mejorNum = '-';
+            let maxFreq = 0;
+            for (const [num, freq] of Object.entries(estadisticas.frecuenciaNumeros)) {
+                if (freq > maxFreq) {
+                    maxFreq = freq;
+                    mejorNum = num;
+                }
+            }
+            elementos.mejorFrecuencia.textContent = mejorNum;
+            
+            // Calcular probabilidad promedio de combinaciones actuales
+            if (combinacionesActuales.length > 0) {
+                const probTotal = combinacionesActuales.reduce((sum, comb) => 
+                    sum + parseFloat(calcularProbabilidadIndividual(comb)), 0);
+                const probPromedio = (probTotal / combinacionesActuales.length).toFixed(2);
+                elementos.probabilidadPromedio.textContent = probPromedio + '%';
+            } else {
+                elementos.probabilidadPromedio.textContent = '0%';
+            }
+        }
+
+        // Función para actualizar las reglas del juego
+        function actualizarReglasJuego(juego) {
+            let reglasHTML = '';
+            
+            switch(juego) {
+                case 'baloto':
+                    reglasHTML = `
+                        <h4>🏆 Reglas del Baloto:</h4>
+                        <ul>
+                            <li>Elige <strong>5 números del 1 al 43</strong> sin repetir</li>
+                            <li>Elige <strong>1 Super Balota del 1 al 16</strong></li>
+                            <li><strong>Formato:</strong> Fondo amarillo para números, fondo rojo para Super Balota</li>
+                            <li><strong>Probabilidad Premio Mayor:</strong> 1 en 6.7 millones</li>
+                        </ul>
+                    `;
+                    break;
+                    
+                case 'mi-loto':
+                    reglasHTML = `
+                        <h4>🎯 Reglas del Mi Loto:</h4>
+                        <ul>
+                            <li>Elige <strong>5 números del 1 al 39</strong> sin repetir</li>
+                            <li>No incluye Super Balota</li>
+                            <li><strong>Formato:</strong> Fondo azul claro para números con texto blanco</li>
+                            <li><strong>Probabilidad Premio Mayor:</strong> 1 en 575,757</li>
+                        </ul>
+                    `;
+                    break;
+                    
+                case 'color-loto':
+                    reglasHTML = `
+                        <h4>🎨 Reglas del Color Loto:</h4>
+                        <ul>
+                            <li>Elige <strong>6 colores</strong> entre: Amarillo, Azul, Rojo, Verde, Blanco, Negro</li>
+                            <li>A cada color asígnale un <strong>número del 1 al 7</strong></li>
+                            <li><strong>Puedes:</strong> Jugar con colores repetidos pero no con el mismo número</li>
+                            <li><strong>O puedes:</strong> Jugar con números repetidos pero no con el mismo color</li>
+                            <li><strong>No puedes:</strong> Repetir combinaciones iguales de número y color</li>
+                            <li><strong>Probabilidad Premio Mayor:</strong> 1 en 117,649</li>
+                        </ul>
+                    `;
+                    break;
+            }
+            
+            elementos.reglasJuego.innerHTML = reglasHTML;
+        }
+
+        // Función para actualizar visibilidad de columnas
+        function actualizarVisibilidadColumnas() {
+            const juego = elementos.juego.value;
+            const balotoHeaders = document.querySelectorAll('.baloto-only');
+            const colorLotoHeaders = document.querySelectorAll('.color-loto-only');
+            
+            // Limpiar combinaciones al cambiar de juego
+            if (combinacionesActuales.length > 0) {
+                combinacionesActuales = [];
+                renderizarTablaCombinaciones();
+                mostrarNotificacion('Combinaciones limpiadas - Juego cambiado', 'info');
+            }
+            
+            // Actualizar visibilidad
+            balotoHeaders.forEach(h => h.style.display = juego === 'baloto' ? 'table-cell' : 'none');
+            colorLotoHeaders.forEach(h => h.style.display = juego === 'color-loto' ? 'table-cell' : 'none');
+        }
+
+        // Función para generar combinaciones con animación
+        function generarCombinaciones() {
+            const boton = elementos.generar;
+            boton.classList.add('loading');
+            
+            setTimeout(() => {
+                const juego = elementos.juego.value;
+                const numCombinaciones = parseInt(elementos.combinaciones.value) || 5;
+                
+                combinacionesActuales = [];
+                
+                for (let i = 0; i < numCombinaciones; i++) {
+                    const combinacion = {
+                        juego: juego,
+                        id: Date.now() + i,
+                        seleccionada: false
+                    };
+                    
+                    switch(juego) {
+                        case 'baloto':
+                            combinacion.numeros = generarNumerosAleatorios(5, 1, 43);
+                            combinacion.superBalota = Math.floor(Math.random() * 16) + 1;
+                            break;
+                        case 'mi-loto':
+                            combinacion.numeros = generarNumerosAleatorios(5, 1, 39);
+                            break;
+                        case 'color-loto':
+                            combinacion.combinaciones = generarCombinacionesColorLoto();
+                            break;
+                    }
+                    
+                    combinacionesActuales.push(combinacion);
+                    
+                    // Actualizar estadísticas de frecuencia
+                    if (juego !== 'color-loto') {
+                        combinacion.numeros.forEach(num => {
+                            estadisticas.frecuenciaNumeros[num] = (estadisticas.frecuenciaNumeros[num] || 0) + 1;
+                        });
+                    }
+                }
+                
+                estadisticas.totalGeneradas += numCombinaciones;
+                localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
+                
+                renderizarTablaCombinaciones();
+                actualizarEstadisticas();
+                boton.classList.remove('loading');
+                mostrarNotificacion(`${numCombinaciones} combinaciones generadas con éxito`, 'success');
+            }, 800);
+        }
+
+        // Función auxiliar para generar números aleatorios
+        function generarNumerosAleatorios(cantidad, min, max) {
+            const numeros = [];
+            while (numeros.length < cantidad) {
+                const num = Math.floor(Math.random() * (max - min + 1)) + min;
+                if (!numeros.includes(num)) numeros.push(num);
+            }
+            return numeros.sort((a, b) => a - b);
+        }
+
+        // Función para Color Loto
+        function generarCombinacionesColorLoto() {
+            const combinaciones = [];
+            const usadas = new Set();
+            
+            while (combinaciones.length < 6) {
+                const color = coloresLoto[Math.floor(Math.random() * coloresLoto.length)];
+                const numero = Math.floor(Math.random() * 7) + 1;
+                const clave = `${color}-${numero}`;
+                
+                if (!usadas.has(clave)) {
+                    usadas.add(clave);
+                    combinaciones.push({ color, numero });
+                }
+            }
+            
+            return combinaciones;
+        }
+
+        // Función para renderizar la tabla con probabilidades
+        function renderizarTablaCombinaciones() {
+            elementos.cuerpoTabla.innerHTML = '';
+            
+            if (combinacionesActuales.length === 0) {
+                elementos.cuerpoTabla.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                            No hay combinaciones generadas
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            combinacionesActuales.forEach((combinacion, index) => {
+                const fila = document.createElement('tr');
+                if (combinacion.seleccionada) {
+                    fila.classList.add('selected');
+                }
+                
+                // Checkbox
+                const celdaCheck = document.createElement('td');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = combinacion.seleccionada;
+                checkbox.addEventListener('change', () => {
+                    combinacion.seleccionada = checkbox.checked;
+                    fila.classList.toggle('selected', checkbox.checked);
+                    actualizarCheckboxSeleccionarTodas();
+                });
+                celdaCheck.appendChild(checkbox);
+                fila.appendChild(celdaCheck);
+                
+                // Número
+                const celdaNum = document.createElement('td');
+                celdaNum.textContent = index + 1;
+                fila.appendChild(celdaNum);
+                
+                // Números principales
+                const celdaNumeros = document.createElement('td');
+                if (combinacion.juego === 'color-loto') {
+                    celdaNumeros.innerHTML = '<em>Ver columna Color Loto</em>';
+                } else {
+                    const clase = combinacion.juego === 'baloto' ? 'baloto-number' : 'mi-loto-number';
+                    combinacion.numeros.forEach(num => {
+                        const span = document.createElement('span');
+                        span.className = clase;
+                        span.textContent = num;
+                        celdaNumeros.appendChild(span);
+                    });
+                }
+                fila.appendChild(celdaNumeros);
+                
+                // Super Balota
+                const celdaSuper = document.createElement('td');
+                celdaSuper.className = 'baloto-only';
+                if (combinacion.juego === 'baloto') {
+                    const span = document.createElement('span');
+                    span.className = 'super-balota';
+                    span.textContent = combinacion.superBalota;
+                    celdaSuper.appendChild(span);
+                } else {
+                    celdaSuper.innerHTML = '-';
+                }
+                fila.appendChild(celdaSuper);
+                
+                // Color Loto
+                const celdaColor = document.createElement('td');
+                celdaColor.className = 'color-loto-only';
+                if (combinacion.juego === 'color-loto') {
+                    combinacion.combinaciones.forEach(comb => {
+                        const span = document.createElement('span');
+                        span.className = `color-loto-cell color-${comb.color}`;
+                        span.textContent = `${comb.color}: ${comb.numero}`;
+                        celdaColor.appendChild(span);
+                    });
+                } else {
+                    celdaColor.innerHTML = '-';
+                }
+                fila.appendChild(celdaColor);
+                
+                // Puntuación
+                const celdaPunt = document.createElement('td');
+                celdaPunt.textContent = calcularPuntuacion(combinacion);
+                celdaPunt.style.fontWeight = 'bold';
+                fila.appendChild(celdaPunt);
+
+                // Probabilidad
+                const celdaProb = document.createElement('td');
+                const probabilidad = calcularProbabilidadIndividual(combinacion);
+                celdaProb.textContent = probabilidad + '%';
+                celdaProb.style.fontWeight = 'bold';
+                celdaProb.style.color = probabilidad > 15 ? '#2ecc71' : probabilidad > 10 ? '#f39c12' : '#e74c3c';
+                fila.appendChild(celdaProb);
+                
+                elementos.cuerpoTabla.appendChild(fila);
+            });
+            
+            actualizarCheckboxSeleccionarTodas();
+        }
+
+        // Función para calcular puntuación
+        function calcularPuntuacion(combinacion) {
+            if (combinacion.juego === 'color-loto') {
+                const colores = new Set(combinacion.combinaciones.map(c => c.color));
+                const numeros = new Set(combinacion.combinaciones.map(c => c.numero));
+                return colores.size + numeros.size;
+            } else {
+                const pares = combinacion.numeros.filter(n => n % 2 === 0).length;
+                const impares = combinacion.numeros.length - pares;
+                return Math.min(pares, impares) * 2;
+            }
+        }
+
+        // Función para seleccionar mejores combinaciones
+        function seleccionarMejoresCombinaciones() {
+            if (combinacionesActuales.length === 0) {
+                mostrarNotificacion('No hay combinaciones', 'warning');
+                return;
+            }
+            
+            // Calcular puntuación considerando probabilidad
+            combinacionesActuales.forEach(c => {
+                c.puntuacionTotal = calcularPuntuacion(c) + (parseFloat(calcularProbabilidadIndividual(c)) / 5);
+            });
+            
+            combinacionesActuales.sort((a, b) => b.puntuacionTotal - a.puntuacionTotal);
+            
+            const cantidad = Math.max(1, Math.floor(combinacionesActuales.length * 0.3));
+            combinacionesActuales.forEach(c => c.seleccionada = false);
+            
+            for (let i = 0; i < cantidad; i++) {
+                combinacionesActuales[i].seleccionada = true;
+            }
+            
+            renderizarTablaCombinaciones();
+            mostrarNotificacion(`${cantidad} mejores combinaciones seleccionadas`, 'success');
+        }
+
+        // Función para eliminar seleccionadas
+        function eliminarCombinacionesSeleccionadas() {
+            const seleccionadas = combinacionesActuales.filter(c => c.seleccionada);
+            if (seleccionadas.length === 0) {
+                mostrarNotificacion('No hay combinaciones seleccionadas', 'warning');
+                return;
+            }
+            
+            if (confirm(`¿Eliminar ${seleccionadas.length} combinación(es)?`)) {
+                combinacionesActuales = combinacionesActuales.filter(c => !c.seleccionada);
+                renderizarTablaCombinaciones();
+                actualizarEstadisticas();
+                mostrarNotificacion('Combinaciones eliminadas', 'success');
+            }
+        }
+
+        // Función para limpiar actuales
+        function limpiarCombinacionesActuales() {
+            if (combinacionesActuales.length === 0) {
+                mostrarNotificacion('No hay combinaciones', 'info');
+                return;
+            }
+            
+            if (confirm('¿Limpiar todas las combinaciones?')) {
+                combinacionesActuales = [];
+                renderizarTablaCombinaciones();
+                actualizarEstadisticas();
+                mostrarNotificacion('Combinaciones limpiadas', 'success');
+            }
+        }
+
+        // Función para seleccionar todas
+        function seleccionarTodasCombinaciones() {
+            const seleccionar = elementos.seleccionarTodas.checked;
+            combinacionesActuales.forEach(c => c.seleccionada = seleccionar);
+            renderizarTablaCombinaciones();
+        }
+
+        // Función para actualizar checkbox "seleccionar todas"
+        function actualizarCheckboxSeleccionarTodas() {
+            if (combinacionesActuales.length === 0) {
+                elementos.seleccionarTodas.checked = false;
+                elementos.seleccionarTodas.disabled = true;
+            } else {
+                elementos.seleccionarTodas.disabled = false;
+                elementos.seleccionarTodas.checked = combinacionesActuales.every(c => c.seleccionada);
+            }
+        }
+
+        // Función para guardar en histórico
+        function guardarEnHistorico() {
+            if (combinacionesActuales.length === 0) {
+                mostrarNotificacion('No hay combinaciones', 'info');
+                return;
+            }
+            
+            const lote = {
+                id: Date.now(),
+                fecha: new Date().toLocaleString('es-ES'),
+                juego: elementos.juego.value,
+                combinaciones: JSON.parse(JSON.stringify(combinacionesActuales))
+            };
+            
+            historico.push(lote);
+            localStorage.setItem('historicoCombinaciones', JSON.stringify(historico));
+            
+            estadisticas.totalGuardadas += combinacionesActuales.length;
+            estadisticas.lotesGuardados++;
+            localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
+            actualizarEstadisticas();
+            
+            mostrarNotificacion('Combinaciones guardadas en histórico', 'success');
+        }
+
+        // Función para mostrar histórico
+        function mostrarHistorico() {
+            if (historico.length === 0) {
+                elementos.contenidoHistorico.innerHTML = '<p>No hay registros en el histórico</p>';
+            } else {
+                let html = '';
+                historico.forEach((lote, index) => {
+                    if (index > 0) html += '<hr style="margin: 20px 0; border-color: var(--border-color);">';
+                    html += `<h3>${lote.fecha} - ${lote.juego}</h3>`;
+                    html += '<table style="width: 100%;"><tr><th>#</th><th>Combinación</th><th>Puntuación</th></tr>';
+                    lote.combinaciones.forEach((combi, idx) => {
+                        html += `<tr><td>${idx + 1}</td><td>${formatearCombinacion(combi)}</td><td>${calcularPuntuacion(combi)}</td></tr>`;
+                    });
+                    html += '</table>';
+                });
+                elementos.contenidoHistorico.innerHTML = html;
+            }
+            elementos.seccionHistorico.classList.remove('hidden');
+        }
+
+        // Función para formatear combinación
+        function formatearCombinacion(combinacion) {
+            if (combinacion.juego === 'color-loto') {
+                return combinacion.combinaciones.map(c => `${c.color}:${c.numero}`).join(', ');
+            } else if (combinacion.juego === 'baloto') {
+                return `${combinacion.numeros.join(', ')} + ${combinacion.superBalota}`;
+            } else {
+                return combinacion.numeros.join(', ');
+            }
+        }
+
+        // Función para limpiar histórico
+        function limpiarHistoricoCompleto() {
+            if (historico.length === 0) {
+                mostrarNotificacion('Histórico vacío', 'info');
+                return;
+            }
+            
+            if (confirm('¿Limpiar TODO el histórico?')) {
+                historico = [];
+                localStorage.removeItem('historicoCombinaciones');
+                elementos.contenidoHistorico.innerHTML = '<p>No hay registros en el histórico</p>';
+                
+                estadisticas.lotesGuardados = 0;
+                estadisticas.totalGuardadas = 0;
+                localStorage.setItem('estadisticasCombinaciones', JSON.stringify(estadisticas));
+                actualizarEstadisticas();
+                
+                mostrarNotificacion('Histórico limpiado completamente', 'success');
+            }
+        }
+
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo) {
+            elementos.notification.textContent = mensaje;
+            elementos.notification.className = `notification ${tipo}`;
+            elementos.notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                elementos.notification.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
