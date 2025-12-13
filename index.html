@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Combinaciones - Sistema Avanzado</title>
     
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
     <!-- Preconexión para mejorar performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     
@@ -305,18 +309,18 @@
             
             <div class="modal-body">
                 <div class="modal-actions">
-                    <button id="export-historico" class="btn-success">
+                    <button id="export-historico" class="btn btn-success">
                         <span class="btn-icon-text" aria-hidden="true">📤</span>
                         Exportar JSON
                     </button>
-                    <button id="import-historico" class="btn-info">
+                    <button id="import-historico" class="btn btn-info">
                         <span class="btn-icon-text" aria-hidden="true">📥</span>
                         Importar JSON
                     </button>
                     <input id="import-file" type="file" 
                            accept="application/json,.json" 
                            class="visually-hidden" />
-                    <button id="limpiar-historico" class="btn-danger">
+                    <button id="limpiar-historico" class="btn btn-danger">
                         <span class="btn-icon-text" aria-hidden="true">🗑️</span>
                         Limpiar Histórico
                     </button>
