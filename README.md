@@ -21,3 +21,17 @@ Un generador de combinaciones para juegos de lotería colombianos con interfaz m
 - ✅ Selección de mejores combinaciones
 
 ## 📁 Estructura del Proyecto
+📁 proyecto/
+├── 📁 styles/
+│   ├── base.css
+│   ├── components.css
+│   ├── layout.css
+│   ├── themes.css
+│   └── main.css
+├── 📁 js/
+│   ├── app.js
+│   ├── storage.js
+│   ├── ui.js
+│   ├── generador.js
+│   └── estadisticas.js
+└── index.html
