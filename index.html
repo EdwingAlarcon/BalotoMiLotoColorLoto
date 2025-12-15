@@ -342,6 +342,13 @@
     
     <!-- Script de inicialización inmediata -->
     <script>
+        // IMPORTANTE: Aplicar tema INMEDIATAMENTE antes de que la página se renderice
+        // Esto evita el parpadeo (flash) al cambiar entre temas
+        (function() {
+            const temaGuardado = localStorage.getItem('tema') || 'light';
+            document.documentElement.setAttribute('data-theme', temaGuardado);
+        })();
+        
         // Verificar que los estilos se cargaron
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Página cargada - verificando estilos...');

@@ -32,8 +32,14 @@
 [data-theme="dark"] h3,
 [data-theme="dark"] h4,
 [data-theme="dark"] h5,
-[data-theme="dark"] h6 {
-    color: var(--text-color);
+[data-theme="dark"] h6,
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6 {
+    color: #e0e0e0;
 }
 
 [data-theme="dark"] .site-title {
