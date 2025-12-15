@@ -297,10 +297,18 @@ function limpiarCombinacionesSilencioso() {
 }
 
 /**
- * Maneja el cambio de tipo de juego
+ * Maneja el cambio de tipo de juego con animación
  * Limpia resultados y actualiza la UI
  */
 function manejarCambioJuego() {
+    const rulesSection = document.querySelector('.rules-section');
+    
+    // Agregar clase de actualización para animación
+    if (rulesSection) {
+        rulesSection.classList.add('updating');
+        setTimeout(() => rulesSection.classList.remove('updating'), 500);
+    }
+    
     // Limpiar combinaciones actuales sin confirmación
     if (AppState.combinaciones.length > 0) {
         limpiarCombinacionesSilencioso();
@@ -330,11 +338,21 @@ function limpiarCombinaciones() {
 }
 
 /**
- * Alterna entre tema claro y oscuro
+ * Alterna entre tema claro y oscuro con animación
  */
 function alternarTema() {
     const nuevoTema = AppState.tema === 'light' ? 'dark' : 'light';
+    
+    // Agregar clase de transición
+    document.body.setAttribute('data-theme-transitioning', '');
+    
+    // Aplicar tema
     aplicarTema(nuevoTema);
+    
+    // Remover clase después de la animación
+    setTimeout(() => {
+        document.body.removeAttribute('data-theme-transitioning');
+    }, 500);
 }
 
 /**
