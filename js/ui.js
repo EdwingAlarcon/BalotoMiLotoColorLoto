@@ -468,6 +468,7 @@ window.actualizarClasesJuego = actualizarClasesJuego;
 window.manejarCambioJuego = manejarCambioJuego;
 window.mostrarHistorial = mostrarHistorial;
 window.cerrarHistorial = cerrarHistorial;
+window.cargarContenidoHistorico = cargarContenidoHistorico;
 window.seleccionarMejores = seleccionarMejores;
 window.eliminarSeleccionadas = eliminarSeleccionadas;
 window.limpiarCombinaciones = limpiarCombinaciones;

@@ -257,9 +257,20 @@ function importarHistorial() {
             guardarDatos();
             mostrarNotificacion('success', `${lotesConIds.length} lotes importados correctamente`);
             
-            // Actualizar UI si el modal está abierto
-            if (!document.getElementById('historico-modal').hidden) {
-                cargarContenidoHistorico();
+            // Actualizar estadísticas
+            if (typeof actualizarEstadisticas === 'function') {
+                actualizarEstadisticas();
+            }
+            
+            // Actualizar UI del modal si está abierto
+            const modal = document.getElementById('historico-modal');
+            if (modal && !modal.hidden) {
+                // Intentar usar la función de UI si está disponible
+                if (typeof cargarContenidoHistorico === 'function') {
+                    cargarContenidoHistorico();
+                } else if (typeof cargarContenidoHistoricoSimple === 'function') {
+                    cargarContenidoHistoricoSimple();
+                }
             }
             
         } catch (error) {
