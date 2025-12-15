@@ -219,6 +219,7 @@ function manejarSeleccionTodas(event) {
 
 /**
  * Selecciona las mejores combinaciones basadas en puntuación
+ * Aplica criterios estadísticos según la cantidad de combinaciones
  */
 function seleccionarMejores() {
     if (AppState.combinaciones.length === 0) {
@@ -226,20 +227,45 @@ function seleccionarMejores() {
         return;
     }
     
+    const total = AppState.combinaciones.length;
+    let cantidadASeleccionar;
+    
+    // Aplicar criterio estadístico basado en la cantidad total
+    if (total <= 5) {
+        // Si hay 5 o menos, seleccionar máximo 3 (top 60%)
+        cantidadASeleccionar = Math.max(1, Math.ceil(total * 0.6));
+    } else if (total <= 10) {
+        // Entre 6 y 10: seleccionar top 50%
+        cantidadASeleccionar = Math.ceil(total * 0.5);
+    } else if (total <= 20) {
+        // Entre 11 y 20: seleccionar top 30-40%
+        cantidadASeleccionar = Math.ceil(total * 0.35);
+    } else if (total <= 50) {
+        // Entre 21 y 50: seleccionar top 20%
+        cantidadASeleccionar = Math.ceil(total * 0.20);
+    } else {
+        // Más de 50: seleccionar top 10-15%, mínimo 5, máximo 20
+        cantidadASeleccionar = Math.max(5, Math.min(20, Math.ceil(total * 0.15)));
+    }
+    
     // Deseleccionar todas primero
     AppState.combinaciones.forEach(c => c.selected = false);
     
-    // Seleccionar las 5 mejores por puntuación
+    // Ordenar por puntuación y seleccionar las mejores
     const mejores = [...AppState.combinaciones]
         .sort((a, b) => b.puntuacion - a.puntuacion)
-        .slice(0, 5);
+        .slice(0, cantidadASeleccionar);
     
     mejores.forEach(combinacion => {
         combinacion.selected = true;
     });
     
     actualizarTablaCombinaciones();
-    mostrarNotificacion('success', '5 mejores combinaciones seleccionadas');
+    
+    const porcentaje = ((cantidadASeleccionar / total) * 100).toFixed(1);
+    mostrarNotificacion('success', 
+        `${cantidadASeleccionar} mejores combinaciones seleccionadas (top ${porcentaje}%)`
+    );
 }
 
 /**

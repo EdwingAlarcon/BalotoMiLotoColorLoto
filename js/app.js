@@ -597,18 +597,38 @@ function seleccionarMejoresSimple() {
         return;
     }
     
+    const total = AppState.combinaciones.length;
+    let cantidadASeleccionar;
+    
+    // Aplicar criterio estadístico basado en la cantidad total
+    if (total <= 5) {
+        cantidadASeleccionar = Math.max(1, Math.ceil(total * 0.6));
+    } else if (total <= 10) {
+        cantidadASeleccionar = Math.ceil(total * 0.5);
+    } else if (total <= 20) {
+        cantidadASeleccionar = Math.ceil(total * 0.35);
+    } else if (total <= 50) {
+        cantidadASeleccionar = Math.ceil(total * 0.20);
+    } else {
+        cantidadASeleccionar = Math.max(5, Math.min(20, Math.ceil(total * 0.15)));
+    }
+    
     AppState.combinaciones.forEach(c => c.selected = false);
     
     const mejores = [...AppState.combinaciones]
         .sort((a, b) => b.puntuacion - a.puntuacion)
-        .slice(0, 5);
+        .slice(0, cantidadASeleccionar);
     
     mejores.forEach(combinacion => {
         combinacion.selected = true;
     });
     
     actualizarTablaSimple();
-    mostrarNotificacionSimple('success', '5 mejores combinaciones seleccionadas');
+    
+    const porcentaje = ((cantidadASeleccionar / total) * 100).toFixed(1);
+    mostrarNotificacionSimple('success', 
+        `${cantidadASeleccionar} mejores combinaciones seleccionadas (top ${porcentaje}%)`
+    );
 }
 
 function eliminarSeleccionadasSimple() {

@@ -214,16 +214,37 @@ function factorial(n) {
 }
 
 /**
- * Filtra y selecciona las mejores combinaciones
- * @param {number} cantidad - Número de combinaciones a seleccionar
+ * Filtra y selecciona las mejores combinaciones usando criterios estadísticos
+ * @param {number} cantidad - Número específico de combinaciones (opcional)
  * @returns {Array} Mejores combinaciones
  */
-function seleccionarMejoresCombinaciones(cantidad = 5) {
+function seleccionarMejoresCombinaciones(cantidad = null) {
     if (AppState.combinaciones.length === 0) return [];
+    
+    const total = AppState.combinaciones.length;
+    let cantidadASeleccionar;
+    
+    // Si se especifica cantidad, usarla; si no, aplicar criterio estadístico
+    if (cantidad !== null) {
+        cantidadASeleccionar = Math.min(cantidad, total);
+    } else {
+        // Aplicar criterio estadístico basado en la cantidad total
+        if (total <= 5) {
+            cantidadASeleccionar = Math.max(1, Math.ceil(total * 0.6));
+        } else if (total <= 10) {
+            cantidadASeleccionar = Math.ceil(total * 0.5);
+        } else if (total <= 20) {
+            cantidadASeleccionar = Math.ceil(total * 0.35);
+        } else if (total <= 50) {
+            cantidadASeleccionar = Math.ceil(total * 0.20);
+        } else {
+            cantidadASeleccionar = Math.max(5, Math.min(20, Math.ceil(total * 0.15)));
+        }
+    }
     
     return [...AppState.combinaciones]
         .sort((a, b) => b.puntuacion - a.puntuacion)
-        .slice(0, cantidad);
+        .slice(0, cantidadASeleccionar);
 }
 
 /**
