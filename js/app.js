@@ -165,6 +165,20 @@ function actualizarClasesJuegoSimple() {
     document.body.classList.add(`${juego}-mode`);
 }
 
+function manejarCambioJuegoSimple() {
+    // Limpiar combinaciones actuales sin confirmación
+    if (AppState.combinaciones.length > 0) {
+        AppState.combinaciones = [];
+        actualizarTablaSimple();
+        actualizarEstadisticasSimple();
+        mostrarNotificacionSimple('info', 'Resultados limpiados al cambiar tipo de juego');
+    }
+    
+    // Actualizar reglas y clases visuales
+    mostrarReglasJuegoSimple();
+    actualizarClasesJuegoSimple();
+}
+
 function inicializarEventos() {
     console.log('Inicializando eventos...');
     
@@ -175,8 +189,7 @@ function inicializarEventos() {
             if (typeof manejarCambioJuego === 'function') {
                 manejarCambioJuego();
             } else {
-                mostrarReglasJuegoSimple();
-                actualizarClasesJuegoSimple();
+                manejarCambioJuegoSimple();
             }
         });
     }

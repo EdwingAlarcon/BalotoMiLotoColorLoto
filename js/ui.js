@@ -287,6 +287,32 @@ function eliminarSeleccionadas() {
 }
 
 /**
+ * Limpia todas las combinaciones sin confirmación
+ * Versión silenciosa para uso interno
+ */
+function limpiarCombinacionesSilencioso() {
+    AppState.combinaciones = [];
+    actualizarTablaCombinaciones();
+    actualizarEstadisticas();
+}
+
+/**
+ * Maneja el cambio de tipo de juego
+ * Limpia resultados y actualiza la UI
+ */
+function manejarCambioJuego() {
+    // Limpiar combinaciones actuales sin confirmación
+    if (AppState.combinaciones.length > 0) {
+        limpiarCombinacionesSilencioso();
+        mostrarNotificacion('info', 'Resultados limpiados al cambiar tipo de juego');
+    }
+    
+    // Actualizar reglas y clases visuales
+    mostrarReglasJuego();
+    actualizarClasesJuego();
+}
+
+/**
  * Limpia todas las combinaciones
  */
 function limpiarCombinaciones() {
@@ -439,3 +465,4 @@ window.mostrarNotificacion = mostrarNotificacion;
 window.actualizarTablaCombinaciones = actualizarTablaCombinaciones;
 window.mostrarReglasJuego = mostrarReglasJuego;
 window.actualizarClasesJuego = actualizarClasesJuego;
+window.manejarCambioJuego = manejarCambioJuego;
