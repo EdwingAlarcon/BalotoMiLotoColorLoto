@@ -42,12 +42,15 @@
 
 [data-theme="dark"] .section-header h2,
 [data-theme="dark"] .section-header .section-title,
-[data-theme="dark"] .results-section .section-title {
+[data-theme="dark"] .results-section .section-title,
+[data-theme="dark"] .section-title,
+[data-theme="dark"] h2.section-title {
     color: var(--text-color) !important;
 }
 
 /* Asegurar visibilidad del título de resultados */
-[data-theme="dark"] #resultados-titulo {
+[data-theme="dark"] #resultados-titulo,
+[data-theme="dark"] #resultados-titulo * {
     color: var(--text-color) !important;
 }
 
@@ -168,8 +171,11 @@
     color: var(--text-secondary);
 }
 
-[data-theme="dark"] .checkbox-label {
-    color: var(--text-color);
+[data-theme="dark"] .checkbox-label,
+[data-theme="dark"] .select-all-container label,
+[data-theme="dark"] label[for="seleccionar-todas"] {
+    color: var(--text-color) !important;
+    font-weight: 500;
 }
 
 [data-theme="dark"] .stat-label {
