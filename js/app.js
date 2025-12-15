@@ -305,6 +305,62 @@ function inicializarEventos() {
         });
     }
     
+    // Botones del modal de histórico
+    const exportHistoricoBtn = document.getElementById('export-historico');
+    if (exportHistoricoBtn) {
+        exportHistoricoBtn.addEventListener('click', function() {
+            if (typeof exportarHistorial === 'function') {
+                exportarHistorial();
+            } else {
+                mostrarNotificacionSimple('error', 'Función de exportar no disponible');
+            }
+        });
+    }
+    
+    const importHistoricoBtn = document.getElementById('import-historico');
+    if (importHistoricoBtn) {
+        importHistoricoBtn.addEventListener('click', function() {
+            const fileInput = document.getElementById('import-file');
+            if (fileInput) {
+                fileInput.click();
+            }
+        });
+    }
+    
+    const importFileInput = document.getElementById('import-file');
+    if (importFileInput) {
+        importFileInput.addEventListener('change', function() {
+            if (typeof importarHistorial === 'function') {
+                importarHistorial();
+            } else {
+                mostrarNotificacionSimple('error', 'Función de importar no disponible');
+            }
+        });
+    }
+    
+    const limpiarHistoricoBtn = document.getElementById('limpiar-historico');
+    if (limpiarHistoricoBtn) {
+        limpiarHistoricoBtn.addEventListener('click', function() {
+            if (typeof limpiarHistorial === 'function') {
+                limpiarHistorial();
+            } else {
+                limpiarHistorialSimple();
+            }
+        });
+    }
+    
+    // Cerrar modal con overlay
+    const modalOverlay = document.querySelector('.modal-overlay');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function() {
+            if (typeof cerrarHistorial === 'function') {
+                cerrarHistorial();
+            } else {
+                cerrarHistorialSimple();
+            }
+        });
+    }
+    
     console.log('✅ Eventos inicializados');
 }
 
@@ -804,6 +860,31 @@ function cargarContenidoHistoricoSimple() {
     }).join('');
     
     contenido.innerHTML = historicoHTML;
+}
+
+function limpiarHistorialSimple() {
+    if (AppState.historial.length === 0) {
+        mostrarNotificacionSimple('warning', 'No hay histórico para limpiar');
+        return;
+    }
+    
+    if (!confirm('¿Estás seguro de que quieres limpiar todo el histórico?\n\nEsta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    AppState.historial = [];
+    AppState.estadisticas.totalLotes = 0;
+    
+    try {
+        localStorage.setItem('historial', JSON.stringify([]));
+        localStorage.setItem('estadisticas', JSON.stringify(AppState.estadisticas));
+    } catch (error) {
+        console.error('Error al guardar:', error);
+    }
+    
+    cargarContenidoHistoricoSimple();
+    actualizarEstadisticasSimple();
+    mostrarNotificacionSimple('success', 'Histórico eliminado correctamente');
 }
 
 function cargarVersionSimple() {
