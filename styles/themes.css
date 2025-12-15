@@ -41,7 +41,13 @@
 }
 
 [data-theme="dark"] .section-header h2,
-[data-theme="dark"] .section-header .section-title {
+[data-theme="dark"] .section-header .section-title,
+[data-theme="dark"] .results-section .section-title {
+    color: var(--text-color) !important;
+}
+
+/* Asegurar visibilidad del título de resultados */
+[data-theme="dark"] #resultados-titulo {
     color: var(--text-color) !important;
 }
 
