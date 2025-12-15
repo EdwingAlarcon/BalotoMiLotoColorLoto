@@ -46,41 +46,79 @@ const AppState = {
         probabilidadAcumulada: 0
     },
     config: CONFIG,
-    tema: localStorage.getItem('tema') || 'light'
+    tema: localStorage.getItem('tema') || 'light',
+    initialized: false
 };
 
 // Inicialización de la aplicación
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Inicializando aplicación...');
+
+    // Inicializar módulos UI
+    if (window.AccessibilityManager) {
+        AccessibilityManager.init();
+        console.log('✓ AccessibilityManager inicializado');
+    }
+
+    if (window.NotificationManager) {
+        NotificationManager.init();
+        console.log('✓ NotificationManager inicializado');
+    }
+
+    if (window.TableManager) {
+        TableManager.init();
+        console.log('✓ TableManager inicializado');
+    }
+
+    // Inicializar tema
+    aplicarTema(AppState.tema);
+
+    // Evento personalizado para cambios de selección
+    document.addEventListener('combinacion-selection-changed', (e) => {
+        const { id, selected } = e.detail;
+        const combinacion = AppState.combinaciones.find(c => c.id == id);
+        if (combinacion) {
+            combinacion.selected = selected;
+            actualizarBotonesSeleccion();
+        }
+    });
+
+    AppState.initialized = true;
+    console.log('✓ Aplicación inicializada correctamente');
+});
+
+// Inicialización de la aplicación
+document.addEventListener('DOMContentLoaded', function() {
     console.log('Aplicación iniciando...');
-    
+
     try {
         // Cargar datos guardados
         if (typeof cargarDatos === 'function') {
             cargarDatos();
         }
-        
+
         // Aplicar tema
         if (typeof aplicarTema === 'function') {
             aplicarTema(AppState.tema);
         } else {
             aplicarTemaSimple(AppState.tema);
         }
-        
+
         // Inicializar UI
         inicializarUI();
-        
+
         // Inicializar eventos
         inicializarEventos();
-        
+
         // Mostrar reglas del juego actual
         if (typeof mostrarReglasJuego === 'function') {
             mostrarReglasJuego();
         } else {
             mostrarReglasJuegoSimple();
         }
-        
+
         console.log('✅ Aplicación inicializada correctamente');
-        
+
     } catch (error) {
         console.error('❌ Error al inicializar la aplicación:', error);
         // Intentar cargar versión simple
@@ -91,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function aplicarTemaSimple(tema) {
     document.documentElement.setAttribute('data-theme', tema);
     localStorage.setItem('tema', tema);
-    
+
     const themeIcon = document.getElementById('themeIcon');
     if (themeIcon) {
         themeIcon.textContent = tema === 'light' ? '🌙' : '☀️';
@@ -101,11 +139,11 @@ function aplicarTemaSimple(tema) {
 function mostrarReglasJuegoSimple() {
     const juego = document.getElementById('juego').value;
     const reglasContenido = document.getElementById('reglas-contenido');
-    
+
     if (!reglasContenido) return;
-    
+
     let reglasHTML = '';
-    
+
     if (juego === 'baloto') {
         reglasHTML = `
             <p><strong>Baloto:</strong></p>
@@ -138,7 +176,7 @@ function mostrarReglasJuegoSimple() {
             </ul>
         `;
     }
-    
+
     reglasContenido.innerHTML = reglasHTML;
 }
 
@@ -148,13 +186,13 @@ function inicializarUI() {
     if (versionElement) {
         versionElement.textContent = `v${CONFIG.version}`;
     }
-    
+
     // Verificar que elementos existan
     console.log('Elementos encontrados:');
     console.log('- Juego select:', document.getElementById('juego'));
     console.log('- Generar button:', document.getElementById('generar'));
     console.log('- Tabla cuerpo:', document.getElementById('cuerpo-tabla'));
-    
+
     // Aplicar clases iniciales
     actualizarClasesJuegoSimple();
 }
@@ -173,7 +211,7 @@ function manejarCambioJuegoSimple() {
         actualizarEstadisticasSimple();
         mostrarNotificacionSimple('info', 'Resultados limpiados al cambiar tipo de juego');
     }
-    
+
     // Actualizar reglas y clases visuales
     mostrarReglasJuegoSimple();
     actualizarClasesJuegoSimple();
@@ -181,7 +219,7 @@ function manejarCambioJuegoSimple() {
 
 function inicializarEventos() {
     console.log('Inicializando eventos...');
-    
+
     // Controles principales
     const juegoSelect = document.getElementById('juego');
     if (juegoSelect) {
@@ -193,7 +231,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const generarBtn = document.getElementById('generar');
     if (generarBtn) {
         generarBtn.addEventListener('click', function() {
@@ -204,7 +242,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const guardarBtn = document.getElementById('guardar');
     if (guardarBtn) {
         guardarBtn.addEventListener('click', function() {
@@ -215,7 +253,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const seleccionarMejoresBtn = document.getElementById('seleccionar-mejores');
     if (seleccionarMejoresBtn) {
         seleccionarMejoresBtn.addEventListener('click', function() {
@@ -226,7 +264,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const eliminarBtn = document.getElementById('eliminar-seleccionados');
     if (eliminarBtn) {
         eliminarBtn.addEventListener('click', function() {
@@ -237,7 +275,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const limpiarBtn = document.getElementById('limpiar');
     if (limpiarBtn) {
         limpiarBtn.addEventListener('click', function() {
@@ -248,7 +286,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const seleccionarTodasCheck = document.getElementById('seleccionar-todas');
     if (seleccionarTodasCheck) {
         seleccionarTodasCheck.addEventListener('change', function(e) {
@@ -259,7 +297,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     // Estadísticas
     const limpiarStatsBtn = document.getElementById('limpiar-estadisticas');
     if (limpiarStatsBtn) {
@@ -271,7 +309,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     // Tema
     const themeToggleBtn = document.getElementById('themeToggle');
     if (themeToggleBtn) {
@@ -281,7 +319,7 @@ function inicializarEventos() {
             AppState.tema = nuevoTema;
         });
     }
-    
+
     // Histórico
     const verHistorialBtn = document.getElementById('ver-historial');
     if (verHistorialBtn) {
@@ -293,7 +331,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const cerrarHistorialBtn = document.getElementById('cerrar-historico');
     if (cerrarHistorialBtn) {
         cerrarHistorialBtn.addEventListener('click', function() {
@@ -304,7 +342,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     // Botones del modal de histórico
     const exportHistoricoBtn = document.getElementById('export-historico');
     if (exportHistoricoBtn) {
@@ -316,7 +354,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const importHistoricoBtn = document.getElementById('import-historico');
     if (importHistoricoBtn) {
         importHistoricoBtn.addEventListener('click', function() {
@@ -326,7 +364,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const importFileInput = document.getElementById('import-file');
     if (importFileInput) {
         importFileInput.addEventListener('change', function() {
@@ -337,7 +375,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     const limpiarHistoricoBtn = document.getElementById('limpiar-historico');
     if (limpiarHistoricoBtn) {
         limpiarHistoricoBtn.addEventListener('click', function() {
@@ -348,7 +386,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     // Cerrar modal con overlay
     const modalOverlay = document.querySelector('.modal-overlay');
     if (modalOverlay) {
@@ -360,7 +398,7 @@ function inicializarEventos() {
             }
         });
     }
-    
+
     console.log('✅ Eventos inicializados');
 }
 
@@ -368,23 +406,23 @@ function inicializarEventos() {
 function generarCombinacionesSimple() {
     const juego = document.getElementById('juego').value;
     const cantidad = parseInt(document.getElementById('combinaciones').value);
-    
+
     if (isNaN(cantidad) || cantidad < 1 || cantidad > CONFIG.maxCombinaciones) {
         mostrarNotificacionSimple('error', `Ingresa un número entre 1 y ${CONFIG.maxCombinaciones}`);
         return;
     }
-    
+
     const configJuego = CONFIG.juegos[juego];
     const nuevasCombinaciones = [];
-    
+
     for (let i = 0; i < cantidad; i++) {
         const combinacion = generarCombinacionSimple(configJuego, juego);
         nuevasCombinaciones.push(combinacion);
     }
-    
+
     AppState.combinaciones.push(...nuevasCombinaciones);
     AppState.estadisticas.totalGeneradas += nuevasCombinaciones.length;
-    
+
     actualizarTablaSimple();
     actualizarEstadisticasSimple();
     mostrarNotificacionSimple('success', `${cantidad} combinación(es) generada(s) correctamente`);
@@ -402,7 +440,7 @@ function generarCombinacionSimple(config, juego) {
         timestamp: Date.now(),
         selected: false
     };
-    
+
     if (juego === 'color-loto') {
         // COLOR LOTO
         const coloresDisponibles = [...config.coloresDisponibles];
@@ -410,17 +448,17 @@ function generarCombinacionSimple(config, juego) {
             const j = Math.floor(Math.random() * (i + 1));
             [coloresDisponibles[i], coloresDisponibles[j]] = [coloresDisponibles[j], coloresDisponibles[i]];
         }
-        
+
         // Tomar los primeros 6 colores y ordenarlos según el patrón
         const coloresSeleccionados = coloresDisponibles.slice(0, 6);
         const ordenColores = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
         combinacion.colores = coloresSeleccionados.sort((a, b) => {
             return ordenColores.indexOf(a) - ordenColores.indexOf(b);
         });
-        
+
         combinacion.colorNumeros = combinacion.colores.map(() => Math.floor(Math.random() * 7) + 1);
         combinacion.numeros = [...combinacion.colorNumeros];
-        
+
     } else {
         // BALOTO y MI LOTO
         while (combinacion.numeros.length < config.numeros) {
@@ -430,13 +468,13 @@ function generarCombinacionSimple(config, juego) {
             }
         }
         combinacion.numeros.sort((a, b) => a - b);
-        
+
         if (config.superBalota) {
-            combinacion.superBalota = Math.floor(Math.random() * 
+            combinacion.superBalota = Math.floor(Math.random() *
                 (config.maxSuperBalota - config.minSuperBalota + 1)) + config.minSuperBalota;
         }
     }
-    
+
     // Calcular puntuación simple
     let puntuacion = 50;
     if (combinacion.numeros) {
@@ -445,10 +483,10 @@ function generarCombinacionSimple(config, juego) {
         puntuacion += (combinacion.numeros.length - Math.abs(pares - impares)) * 5;
     }
     combinacion.puntuacion = Math.min(100, Math.max(0, puntuacion));
-    
+
     // Calcular probabilidad simple
     combinacion.probabilidad = Math.random() * 0.000001;
-    
+
     return combinacion;
 }
 
@@ -461,7 +499,7 @@ function mostrarNotificacionSimple(tipo, mensaje, duracion = 3000) {
         area.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 1000;';
         document.body.appendChild(area);
     }
-    
+
     const notification = document.createElement('div');
     notification.className = `notification ${tipo}`;
     notification.style.cssText = `
@@ -472,15 +510,15 @@ function mostrarNotificacionSimple(tipo, mensaje, duracion = 3000) {
         margin-bottom: 8px;
         animation: slideIn 0.3s ease-out;
     `;
-    
+
     if (tipo === 'success') notification.style.background = '#2ecc71';
     else if (tipo === 'error') notification.style.background = '#e74c3c';
     else if (tipo === 'warning') notification.style.background = '#f39c12';
     else notification.style.background = '#3498db';
-    
+
     notification.textContent = mensaje;
     notificationArea.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.remove();
     }, duracion);
@@ -489,7 +527,7 @@ function mostrarNotificacionSimple(tipo, mensaje, duracion = 3000) {
 function actualizarTablaSimple() {
     const tbody = document.getElementById('cuerpo-tabla');
     if (!tbody) return;
-    
+
     if (AppState.combinaciones.length === 0) {
         tbody.innerHTML = `
             <tr class="empty-state">
@@ -503,10 +541,10 @@ function actualizarTablaSimple() {
         `;
         return;
     }
-    
+
     const juego = document.getElementById('juego').value;
     const config = CONFIG.juegos[juego];
-    
+
     const rows = AppState.combinaciones.map((combinacion, index) => {
         let numerosHTML = '';
         if (juego === 'color-loto') {
@@ -539,7 +577,7 @@ function actualizarTablaSimple() {
                 `;
             }).join('');
         }
-        
+
         let extraHTML = '';
         if (juego === 'baloto' && combinacion.superBalota) {
             extraHTML = `
@@ -548,12 +586,12 @@ function actualizarTablaSimple() {
                 </div>
             `;
         }
-        
+
         return `
             <tr style="${combinacion.selected ? 'background: #d4edff;' : ''}">
                 <td style="text-align: center;">
-                    <input type="checkbox" class="combinacion-checkbox" 
-                           data-id="${combinacion.id}" 
+                    <input type="checkbox" class="combinacion-checkbox"
+                           data-id="${combinacion.id}"
                            ${combinacion.selected ? 'checked' : ''}
                            style="width: 18px; height: 18px;">
                 </td>
@@ -567,7 +605,7 @@ function actualizarTablaSimple() {
                 <td class="${juego === 'color-loto' ? '' : 'hidden'}" style="text-align: center;">${extraHTML}</td>
                 <td>
                     <div style="background: #e0e0e0; border-radius: 4px; height: 8px; width: 100%; margin-bottom: 4px;">
-                        <div style="background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1); 
+                        <div style="background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1);
                                     border-radius: 4px; height: 100%; width: ${combinacion.puntuacion}%;"></div>
                     </div>
                     ${combinacion.puntuacion}%
@@ -576,9 +614,9 @@ function actualizarTablaSimple() {
             </tr>
         `;
     }).join('');
-    
+
     tbody.innerHTML = rows;
-    
+
     // Agregar eventos a los checkboxes
     tbody.querySelectorAll('.combinacion-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
@@ -597,12 +635,12 @@ function actualizarEstadisticasSimple() {
     if (totalElement) {
         totalElement.textContent = AppState.estadisticas.totalGeneradas;
     }
-    
+
     const lotesElement = document.getElementById('total-lotes');
     if (lotesElement) {
         lotesElement.textContent = AppState.estadisticas.totalLotes;
     }
-    
+
     // Calcular número más frecuente
     const frecuencia = {};
     AppState.combinaciones.forEach(combinacion => {
@@ -610,7 +648,7 @@ function actualizarEstadisticasSimple() {
             frecuencia[numero] = (frecuencia[numero] || 0) + 1;
         });
     });
-    
+
     let maxNumero = '-';
     let maxFrecuencia = 0;
     Object.entries(frecuencia).forEach(([numero, freq]) => {
@@ -619,12 +657,12 @@ function actualizarEstadisticasSimple() {
             maxNumero = numero;
         }
     });
-    
+
     const frecuenciaElement = document.getElementById('mejor-frecuencia');
     if (frecuenciaElement) {
         frecuenciaElement.textContent = maxNumero !== '-' ? `${maxNumero} (${maxFrecuencia} veces)` : '-';
     }
-    
+
     // Calcular probabilidad promedio
     if (AppState.combinaciones.length > 0) {
         const promedio = AppState.combinaciones.reduce((sum, c) => sum + c.probabilidad, 0) / AppState.combinaciones.length;
@@ -640,21 +678,21 @@ function guardarEnHistorialSimple() {
         mostrarNotificacionSimple('warning', 'No hay combinaciones para guardar');
         return;
     }
-    
+
     const lote = {
         id: Date.now(),
         fecha: new Date().toISOString(),
         juego: document.getElementById('juego').value,
         combinaciones: [...AppState.combinaciones]
     };
-    
+
     AppState.historial.unshift(lote);
     AppState.estadisticas.totalLotes++;
-    
+
     if (AppState.historial.length > CONFIG.maxHistorial) {
         AppState.historial.pop();
     }
-    
+
     // Guardar en localStorage
     try {
         localStorage.setItem('generador_combinaciones_historial', JSON.stringify(AppState.historial));
@@ -662,7 +700,7 @@ function guardarEnHistorialSimple() {
     } catch (e) {
         console.error('Error al guardar en localStorage:', e);
     }
-    
+
     mostrarNotificacionSimple('success', 'Combinaciones guardadas en el histórico');
 }
 
@@ -671,10 +709,10 @@ function seleccionarMejoresSimple() {
         mostrarNotificacionSimple('warning', 'No hay combinaciones para seleccionar');
         return;
     }
-    
+
     const total = AppState.combinaciones.length;
     let cantidadASeleccionar;
-    
+
     // Aplicar criterio estadístico basado en la cantidad total
     if (total <= 5) {
         cantidadASeleccionar = Math.max(1, Math.ceil(total * 0.6));
@@ -687,43 +725,43 @@ function seleccionarMejoresSimple() {
     } else {
         cantidadASeleccionar = Math.max(5, Math.min(20, Math.ceil(total * 0.15)));
     }
-    
+
     AppState.combinaciones.forEach(c => c.selected = false);
-    
+
     const mejores = [...AppState.combinaciones]
         .sort((a, b) => b.puntuacion - a.puntuacion)
         .slice(0, cantidadASeleccionar);
-    
+
     mejores.forEach(combinacion => {
         combinacion.selected = true;
     });
-    
+
     actualizarTablaSimple();
-    
+
     const porcentaje = ((cantidadASeleccionar / total) * 100).toFixed(1);
-    mostrarNotificacionSimple('success', 
+    mostrarNotificacionSimple('success',
         `${cantidadASeleccionar} mejores combinaciones seleccionadas (top ${porcentaje}%)`
     );
 }
 
 function eliminarSeleccionadasSimple() {
     const seleccionadas = AppState.combinaciones.filter(c => c.selected);
-    
+
     if (seleccionadas.length === 0) {
         mostrarNotificacionSimple('warning', 'No hay combinaciones seleccionadas para eliminar');
         return;
     }
-    
+
     AppState.combinaciones = AppState.combinaciones.filter(c => !c.selected);
     actualizarTablaSimple();
     actualizarEstadisticasSimple();
-    
+
     mostrarNotificacionSimple('info', `${seleccionadas.length} combinación(es) eliminada(s)`);
 }
 
 function limpiarCombinacionesSimple() {
     if (AppState.combinaciones.length === 0) return;
-    
+
     if (confirm('¿Estás seguro de que quieres limpiar todas las combinaciones?')) {
         AppState.combinaciones = [];
         actualizarTablaSimple();
@@ -737,13 +775,13 @@ function manejarSeleccionTodasSimple(e) {
     AppState.combinaciones.forEach(combinacion => {
         combinacion.selected = checked;
     });
-    
+
     actualizarTablaSimple();
 }
 
 function limpiarEstadisticasSimple() {
     if (AppState.combinaciones.length === 0 && AppState.estadisticas.totalGeneradas === 0) return;
-    
+
     if (confirm('¿Estás seguro de que quieres limpiar todas las estadísticas?')) {
         AppState.estadisticas = {
             totalGeneradas: 0,
@@ -761,10 +799,10 @@ function limpiarEstadisticasSimple() {
 function mostrarHistorialSimple() {
     const modal = document.getElementById('historico-modal');
     if (!modal) return;
-    
+
     modal.hidden = false;
     modal.style.display = 'flex';
-    
+
     // Cargar contenido del histórico
     cargarContenidoHistoricoSimple();
 }
@@ -772,7 +810,7 @@ function mostrarHistorialSimple() {
 function cerrarHistorialSimple() {
     const modal = document.getElementById('historico-modal');
     if (!modal) return;
-    
+
     modal.hidden = true;
     modal.style.display = 'none';
 }
@@ -780,7 +818,7 @@ function cerrarHistorialSimple() {
 function cargarContenidoHistoricoSimple() {
     const contenido = document.getElementById('historico-contenido');
     if (!contenido) return;
-    
+
     if (AppState.historial.length === 0) {
         contenido.innerHTML = `
             <div class="empty-message">
@@ -790,7 +828,7 @@ function cargarContenidoHistoricoSimple() {
         `;
         return;
     }
-    
+
     const historicoHTML = AppState.historial.map(lote => {
         const juegoNombre = CONFIG.juegos[lote.juego].nombre;
         const fecha = new Date(lote.fecha).toLocaleDateString('es-ES', {
@@ -800,7 +838,7 @@ function cargarContenidoHistoricoSimple() {
             hour: '2-digit',
             minute: '2-digit'
         });
-        
+
         return `
             <div style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -819,7 +857,7 @@ function cargarContenidoHistoricoSimple() {
                         if (lote.juego === 'color-loto') {
                             return `
                                 <div style="display: flex; gap: 4px; margin-bottom: 8px;">
-                                    ${combinacion.colores.slice(0, 3).map(color => 
+                                    ${combinacion.colores.slice(0, 3).map(color =>
                                         `<div style="width: 25px; height: 25px; border-radius: 50%; background: ${
                                             color === 'amarillo' ? '#f4c430' :
                                             color === 'azul' ? '#003d7a' :
@@ -840,12 +878,12 @@ function cargarContenidoHistoricoSimple() {
                         } else {
                             return `
                                 <div style="display: flex; gap: 4px; margin-bottom: 8px;">
-                                    ${combinacion.numeros.slice(0, 3).map(num => 
+                                    ${combinacion.numeros.slice(0, 3).map(num =>
                                         `<div style="width: 25px; height: 25px; border-radius: 50%; background: ${lote.juego === 'baloto' ? '#FFD700' : '#003d7a'}; color: ${lote.juego === 'baloto' ? '#000' : 'white'}; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                                             ${num}
                                         </div>`
                                     ).join('')}
-                                    ${combinacion.superBalota ? 
+                                    ${combinacion.superBalota ?
                                         `<div style="width: 25px; height: 25px; border-radius: 50%; background: #DC143C; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                                             ${combinacion.superBalota}
                                         </div>` : ''}
@@ -856,7 +894,7 @@ function cargarContenidoHistoricoSimple() {
                             `;
                         }
                     }).join('')}
-                    ${lote.combinaciones.length > 2 ? 
+                    ${lote.combinaciones.length > 2 ?
                         `<p style="text-align: center; margin: 8px 0 0 0; color: #666; font-size: 0.875rem;">
                             ... y ${lote.combinaciones.length - 2} combinaciones más
                         </p>` : ''}
@@ -864,7 +902,7 @@ function cargarContenidoHistoricoSimple() {
             </div>
         `;
     }).join('');
-    
+
     contenido.innerHTML = historicoHTML;
 }
 
@@ -873,21 +911,21 @@ function limpiarHistorialSimple() {
         mostrarNotificacionSimple('warning', 'No hay histórico para limpiar');
         return;
     }
-    
+
     if (!confirm('¿Estás seguro de que quieres limpiar todo el histórico?\n\nEsta acción no se puede deshacer.')) {
         return;
     }
-    
+
     AppState.historial = [];
     AppState.estadisticas.totalLotes = 0;
-    
+
     try {
         localStorage.setItem('historial', JSON.stringify([]));
         localStorage.setItem('estadisticas', JSON.stringify(AppState.estadisticas));
     } catch (error) {
         console.error('Error al guardar:', error);
     }
-    
+
     cargarContenidoHistoricoSimple();
     actualizarEstadisticasSimple();
     mostrarNotificacionSimple('success', 'Histórico eliminado correctamente');
@@ -895,7 +933,7 @@ function limpiarHistorialSimple() {
 
 function cargarVersionSimple() {
     console.log('Cargando versión simple...');
-    
+
     // Verificar elementos críticos
     const elementsToCheck = [
         'juego',
@@ -904,13 +942,13 @@ function cargarVersionSimple() {
         'reglas-contenido',
         'total-combinaciones'
     ];
-    
+
     elementsToCheck.forEach(id => {
         if (!document.getElementById(id)) {
             console.error(`Elemento crítico no encontrado: #${id}`);
         }
     });
-    
+
     // Aplicar estilos mínimos si CSS no carga
     setTimeout(() => {
         if (!document.querySelector('.card')) {

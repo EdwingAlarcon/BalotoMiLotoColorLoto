@@ -2,16 +2,17 @@
 [data-theme="dark"] {
     --bg-color: #1a1a1a;
     --bg-card: #2d2d2d;
+    --bg-hover: #3d3d3d;
     --text-color: #f0f0f0;
     --text-secondary: #b0b0b0;
     --border-color: #404040;
     --primary-color: #4a90e2;
-    
+
     /* Colores de juegos ajustados para contraste */
     --baloto-color: #e6b800;
     --super-balota-color: #ff4d4d;
     --mi-loto-color: #0056b3;
-    
+
     /* Colores para Color Loto en modo oscuro */
     --color-amarillo: #d4ac0d;
     --color-azul: #0056b3;
@@ -19,11 +20,18 @@
     --color-verde: #218838;
     --color-blanco: #e9ecef;
     --color-negro: #343a40;
-    
+
     /* Sombras más sutiles en modo oscuro */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    --shadow-color: rgba(0, 0, 0, 0.4);
+
+    /* Mejorar colores de estados en dark mode */
+    --success-color: #27ae60;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --info-color: #3498db;
 }
 
 /* Títulos principales */
@@ -235,8 +243,8 @@ body,
 .form-select,
 .data-table,
 .stat-card {
-    transition: background-color 0.3s ease, 
-                border-color 0.3s ease, 
+    transition: background-color 0.3s ease,
+                border-color 0.3s ease,
                 color 0.3s ease;
 }
 
