@@ -33,6 +33,13 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 *.code-workspace
 
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
 # JetBrains
 .idea/
 *.iml
