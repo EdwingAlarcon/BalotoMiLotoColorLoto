@@ -103,7 +103,7 @@ Se crearon 3 módulos independientes en `js/ui-modules/`:
 1. **Implementar Chart.js** (1-2 horas)
    - Gráfico de frecuencia de números
    - Gráfico de distribución de probabilidades
-   
+
 2. **Testing de Accesibilidad** (30 min)
    - Probar con NVDA/JAWS
    - Validar con axe DevTools
@@ -112,7 +112,7 @@ Se crearon 3 módulos independientes en `js/ui-modules/`:
 3. **Filtros y Búsqueda** (2-3 horas)
    - Buscar por número
    - Filtrar por probabilidad
-   
+
 4. **Animaciones de Números** (1 hora)
    - CountUp effect en estadísticas
    - Smooth transitions
@@ -172,9 +172,9 @@ Código comentado y organizado para fácil comprensión.
 
 ---
 
-**Estado:** ✅ Completado y Probado  
-**Commit:** `1975e69` - feat: mejoras incrementales de UI, accesibilidad y modularización  
-**Fecha:** 15 de Diciembre, 2025  
-**Archivos Modificados:** 11 (6 modificados, 5 nuevos)  
-**Líneas Añadidas:** 1,361  
-**Líneas Eliminadas:** 161  
+**Estado:** ✅ Completado y Probado
+**Commit:** `1975e69` - feat: mejoras incrementales de UI, accesibilidad y modularización
+**Fecha:** 15 de Diciembre, 2025
+**Archivos Modificados:** 11 (6 modificados, 5 nuevos)
+**Líneas Añadidas:** 1,361
+**Líneas Eliminadas:** 161
