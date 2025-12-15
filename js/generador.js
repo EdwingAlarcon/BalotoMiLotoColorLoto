@@ -30,7 +30,13 @@ function generarCombinacionUnica(config, juego) {
         }
         
         // Tomar los primeros 6 colores
-        combinacion.colores = coloresDisponibles.slice(0, 6);
+        const coloresSeleccionados = coloresDisponibles.slice(0, 6);
+        
+        // Ordenar colores según el orden especificado: Amarillo, Azul, Rojo, Verde, Blanco, Negro
+        const ordenColores = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
+        combinacion.colores = coloresSeleccionados.sort((a, b) => {
+            return ordenColores.indexOf(a) - ordenColores.indexOf(b);
+        });
         
         // Asignar un número del 1 al 7 a cada color
         combinacion.colorNumeros = combinacion.colores.map(() => {

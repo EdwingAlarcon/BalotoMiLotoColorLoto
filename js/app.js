@@ -411,7 +411,13 @@ function generarCombinacionSimple(config, juego) {
             [coloresDisponibles[i], coloresDisponibles[j]] = [coloresDisponibles[j], coloresDisponibles[i]];
         }
         
-        combinacion.colores = coloresDisponibles.slice(0, 6);
+        // Tomar los primeros 6 colores y ordenarlos según el patrón
+        const coloresSeleccionados = coloresDisponibles.slice(0, 6);
+        const ordenColores = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
+        combinacion.colores = coloresSeleccionados.sort((a, b) => {
+            return ordenColores.indexOf(a) - ordenColores.indexOf(b);
+        });
+        
         combinacion.colorNumeros = combinacion.colores.map(() => Math.floor(Math.random() * 7) + 1);
         combinacion.numeros = [...combinacion.colorNumeros];
         
