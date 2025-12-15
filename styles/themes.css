@@ -190,10 +190,6 @@
     color: var(--text-secondary);
 }
 
-[data-theme="dark"] .section-title {
-    color: var(--text-color);
-}
-
 [data-theme="dark"] .footer-text,
 [data-theme="dark"] .footer-disclaimer {
     color: var(--text-secondary);
