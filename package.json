@@ -1,0 +1,53 @@
+{
+  "name": "generador-combinaciones",
+  "version": "1.0.0",
+  "description": "Generador de combinaciones para juegos de lotería colombianos con interfaz moderna, estadísticas avanzadas y almacenamiento local",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080 -o",
+    "serve": "npx live-server --port=8080 --open=index.html",
+    "lint": "npx eslint js/**/*.js",
+    "format": "npx prettier --write \"**/*.{js,css,html,md}\"",
+    "validate": "npx html-validator-cli --file index.html",
+    "test": "echo \"No se han configurado pruebas aún\" && exit 0",
+    "build": "echo \"Este es un proyecto estático, no requiere compilación\" && exit 0"
+  },
+  "keywords": [
+    "lotería",
+    "baloto",
+    "mi-loto",
+    "color-loto",
+    "generador",
+    "combinaciones",
+    "colombia",
+    "estadísticas",
+    "probabilidad"
+  ],
+  "author": "Generador de Combinaciones Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tu-usuario/generador-combinaciones.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/generador-combinaciones/issues"
+  },
+  "homepage": "https://github.com/tu-usuario/generador-combinaciones#readme",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.1.1",
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2",
+    "html-validator-cli": "^6.1.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}
