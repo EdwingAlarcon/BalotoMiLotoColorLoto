@@ -26,6 +26,30 @@
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
 }
 
+/* Títulos principales */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .site-title {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .section-header h2,
+[data-theme="dark"] .section-header .section-title {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .main-header {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+}
+
 [data-theme="dark"] .card {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -40,6 +64,16 @@
     background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
 }
 
+[data-theme="dark"] .rules-section p,
+[data-theme="dark"] .rules-section li {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .rules-section ul,
+[data-theme="dark"] .rules-section ol {
+    color: var(--text-color);
+}
+
 [data-theme="dark"] .data-table {
     background-color: var(--bg-card);
 }
@@ -50,6 +84,15 @@
 
 [data-theme="dark"] .data-table td {
     border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .data-table tbody tr:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+[data-theme="dark"] .data-table tbody tr.selected {
+    background-color: rgba(74, 144, 226, 0.2);
 }
 
 [data-theme="dark"] .form-input,
@@ -68,15 +111,106 @@
 }
 
 [data-theme="dark"] .modal-overlay {
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .modal-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .historico-content {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .historico-content h3 {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .historico-content p {
+    color: var(--text-secondary);
 }
 
 [data-theme="dark"] .main-footer {
-    background-color: #000000;
+    background-color: #1a1a1a;
+    border-top: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .footer-text {
+    color: #f0f0f0;
+}
+
+[data-theme="dark"] .footer-disclaimer {
+    color: #b0b0b0;
+}
+
+[data-theme="dark"] .version {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #f0f0f0;
 }
 
 [data-theme="dark"] .color-number {
     color: #f0f0f0;
+}
+
+/* Mejorar legibilidad de textos en modo oscuro */
+[data-theme="dark"] .form-label {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .form-description {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .checkbox-label {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .stat-label {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .probability-label {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .empty-message {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .section-title {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .footer-text,
+[data-theme="dark"] .footer-disclaimer {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .modal-title {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .probability-value {
+    color: var(--secondary-color);
+}
+
+[data-theme="dark"] .stat-value {
+    color: var(--secondary-color);
+}
+
+/* Mejorar contraste de número amarillo baloto en modo oscuro */
+[data-theme="dark"] .baloto-number {
+    background-color: var(--baloto-color);
+    color: #000;
+    font-weight: 700;
+}
+
+/* Asegurar que los colores de Color Loto sean legibles */
+[data-theme="dark"] .color-blanco {
+    background-color: var(--color-blanco);
+    color: #000;
+    border: 2px solid var(--border-color);
 }
 
 /* Transiciones suaves para cambio de tema */

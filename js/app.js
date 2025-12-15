@@ -450,7 +450,7 @@ function actualizarTablaSimple() {
                         <div class="number-ball" style="background: ${colorMap[color] || '#666'}; color: ${color === 'amarillo' || color === 'blanco' ? '#000' : 'white'}; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: ${color === 'blanco' ? '1px solid #ccc' : 'none'}">
                             ${color.charAt(0).toUpperCase()}
                         </div>
-                        <small style="font-size: 10px; font-weight: bold; margin-top: 2px;">${numero}</small>
+                        <small class="color-number" style="font-size: 10px; font-weight: bold; margin-top: 2px;">${numero}</small>
                     </div>
                 `;
             }).join('');
