@@ -17,35 +17,76 @@ function generarCombinacionUnica(config, juego) {
         probabilidad: 0,
         timestamp: Date.now()
     };
-    
+
     // Generar números principales según el juego
     if (juego === 'color-loto') {
-        // COLOR LOTERÍA: Generar 6 colores únicos con números del 1-7
+        // COLOR LOTERÍA: Generar 6 parejas (color, número) únicas
+        // Reglas: Colores repetidos OK si números diferentes, O números repetidos OK si colores diferentes
+        // No repetir parejas (color, número)
+
         const coloresDisponibles = [...config.coloresDisponibles];
-        
-        // Mezclar colores disponibles
-        for (let i = coloresDisponibles.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [coloresDisponibles[i], coloresDisponibles[j]] = [coloresDisponibles[j], coloresDisponibles[i]];
+        const parejasGeneradas = new Set(); // Para evitar duplicar (color, número)
+        const coloresUsados = [];
+        const numerosUsados = [];
+
+        // Decidir estrategia: 50% colores únicos con números posiblemente repetidos,
+        // 50% números únicos con colores posiblemente repetidos
+        const estrategia = Math.random() < 0.5 ? 'colores-unicos' : 'numeros-unicos';
+
+        if (estrategia === 'colores-unicos') {
+            // Estrategia: 6 colores únicos, números pueden repetirse
+            const coloresSeleccionados = [...coloresDisponibles].sort(() => Math.random() - 0.5).slice(0, 6);
+
+            for (const color of coloresSeleccionados) {
+                let numero;
+                let intentos = 0;
+                do {
+                    numero = Math.floor(Math.random() * 7) + 1;
+                    intentos++;
+                    if (intentos > 50) break; // Evitar loop infinito
+                } while (parejasGeneradas.has(`${color}-${numero}`));
+
+                parejasGeneradas.add(`${color}-${numero}`);
+                coloresUsados.push(color);
+                numerosUsados.push(numero);
+            }
+        } else {
+            // Estrategia: 6 números únicos (del 1 al 7, puede haber 1 repetido), colores pueden repetirse
+            // Como solo hay 7 números y necesitamos 6, casi todos serán únicos
+            const numerosDisponibles = [1, 2, 3, 4, 5, 6, 7];
+            const numerosSeleccionados = [...numerosDisponibles].sort(() => Math.random() - 0.5).slice(0, 6);
+
+            for (const numero of numerosSeleccionados) {
+                let color;
+                let intentos = 0;
+                do {
+                    color = coloresDisponibles[Math.floor(Math.random() * coloresDisponibles.length)];
+                    intentos++;
+                    if (intentos > 50) break; // Evitar loop infinito
+                } while (parejasGeneradas.has(`${color}-${numero}`));
+
+                parejasGeneradas.add(`${color}-${numero}`);
+                coloresUsados.push(color);
+                numerosUsados.push(numero);
+            }
         }
-        
-        // Tomar los primeros 6 colores
-        const coloresSeleccionados = coloresDisponibles.slice(0, 6);
-        
-        // Ordenar colores según el orden especificado: Amarillo, Azul, Rojo, Verde, Blanco, Negro
+
+        // Ordenar por el orden estándar de colores
         const ordenColores = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
-        combinacion.colores = coloresSeleccionados.sort((a, b) => {
-            return ordenColores.indexOf(a) - ordenColores.indexOf(b);
-        });
-        
-        // Asignar un número del 1 al 7 a cada color
-        combinacion.colorNumeros = combinacion.colores.map(() => {
-            return Math.floor(Math.random() * 7) + 1;
-        });
-        
+        const parejas = coloresUsados.map((color, index) => ({
+            color,
+            numero: numerosUsados[index],
+            ordenColor: ordenColores.indexOf(color)
+        }));
+
+        parejas.sort((a, b) => a.ordenColor - b.ordenColor);
+
+        combinacion.colores = parejas.map(p => p.color);
+        combinacion.colorNumeros = parejas.map(p => p.numero);
+
         // Para Color Loto, los "números" son los números asignados a los colores
         combinacion.numeros = [...combinacion.colorNumeros];
-        
+
     } else {
         // BALOTO y MI LOTO: Generar números únicos
         while (combinacion.numeros.length < config.numeros) {
@@ -54,21 +95,21 @@ function generarCombinacionUnica(config, juego) {
                 combinacion.numeros.push(numero);
             }
         }
-        
+
         // Ordenar números
         combinacion.numeros.sort((a, b) => a - b);
-        
+
         // Generar Super Balota si corresponde (solo Baloto)
         if (config.superBalota) {
-            combinacion.superBalota = Math.floor(Math.random() * 
+            combinacion.superBalota = Math.floor(Math.random() *
                 (config.maxSuperBalota - config.minSuperBalota + 1)) + config.minSuperBalota;
         }
     }
-    
+
     // Calcular puntuación y probabilidad
     combinacion.puntuacion = calcularPuntuacion(combinacion, config, juego);
     combinacion.probabilidad = calcularProbabilidad(combinacion, config, juego);
-    
+
     return combinacion;
 }
 
@@ -81,31 +122,31 @@ function generarCombinacionUnica(config, juego) {
  */
 function calcularPuntuacion(combinacion, config, juego) {
     let puntuacion = 0;
-    
+
     if (juego === 'color-loto') {
         // PUNTUACIÓN PARA COLOR LOTO
         // Puntos por tener todos los colores diferentes (siempre deberían ser diferentes)
         const coloresUnicos = new Set(combinacion.colores).size;
         puntuacion += (coloresUnicos === 6) ? 30 : (coloresUnicos * 4);
-        
+
         // Puntos por distribución de números (1-7)
         const numeros = combinacion.colorNumeros;
         const numerosUnicos = new Set(numeros).size;
         puntuacion += numerosUnicos * 8;
-        
+
         // Bonus por buena distribución (no todos iguales, no todos diferentes)
         if (numerosUnicos > 1 && numerosUnicos < 6) {
             puntuacion += 15;
         }
-        
+
         // Puntos por distribución de números altos/bajos
         const bajos = numeros.filter(n => n <= 3).length;
         const medios = numeros.filter(n => n > 3 && n <= 5).length;
         const altos = numeros.filter(n => n > 5).length;
-        
+
         const distribucion = Math.max(bajos, medios, altos) - Math.min(bajos, medios, altos);
         puntuacion += (3 - distribucion) * 5;
-        
+
     } else {
         // PUNTUACIÓN PARA BALOTO Y MI LOTO
         // Puntos por números pares/impares balanceados
@@ -113,12 +154,12 @@ function calcularPuntuacion(combinacion, config, juego) {
         const impares = combinacion.numeros.length - pares;
         const balanceParidad = Math.abs(pares - impares);
         puntuacion += (config.numeros - balanceParidad) * 12;
-        
+
         // Puntos por distribución de números (evitar agrupaciones)
         const desviacion = calcularDesviacion(combinacion.numeros);
         const rango = config.maxNumero - config.minNumero;
         puntuacion += Math.round((rango - desviacion) / (rango / 20));
-        
+
         // Puntos por Super Balota si existe
         if (combinacion.superBalota) {
             // Bonus si Super Balota es diferente de los números principales
@@ -132,7 +173,7 @@ function calcularPuntuacion(combinacion, config, juego) {
                 puntuacion += 5;
             }
         }
-        
+
         // Puntos por no tener números consecutivos
         let consecutivos = 0;
         for (let i = 1; i < combinacion.numeros.length; i++) {
@@ -142,7 +183,7 @@ function calcularPuntuacion(combinacion, config, juego) {
         }
         puntuacion -= consecutivos * 8;
     }
-    
+
     // Asegurar que la puntuación esté entre 0 y 100
     return Math.min(100, Math.max(0, Math.round(puntuacion)));
 }
@@ -156,13 +197,14 @@ function calcularPuntuacion(combinacion, config, juego) {
  */
 function calcularProbabilidad(combinacion, config, juego) {
     let totalCombinaciones = 1;
-    
+
     if (juego === 'color-loto') {
-        // COLOR LOTO: 6! × 7^6
-        const combinacionesColores = factorial(6); // 720
-        const combinacionesNumeros = Math.pow(7, 6); // 117,649
-        totalCombinaciones = combinacionesColores * combinacionesNumeros; // 84,707,280
-        
+        // COLOR LOTO: Combinaciones de parejas (color, número) únicas
+        // Con 6 colores y 7 números, permitiendo repeticiones según las reglas
+        // Cada posición puede tener cualquiera de 6 colores × 7 números = 42 opciones
+        // Pero debemos evitar duplicar parejas, aproximación: 42 × 41 × 40 × 39 × 38 × 37
+        totalCombinaciones = 42 * 41 * 40 * 39 * 38 * 37; // ~3,776,965,920
+
     } else if (juego === 'baloto') {
         // BALOTO: C(43,5) × 16
         const n = 43;
@@ -170,24 +212,24 @@ function calcularProbabilidad(combinacion, config, juego) {
         const combinacionesNumeros = factorial(n) / (factorial(k) * factorial(n - k)); // 8,145,060
         const combinacionesSuperBalota = 16;
         totalCombinaciones = combinacionesNumeros * combinacionesSuperBalota; // 130,321,920
-        
+
     } else if (juego === 'mi-loto') {
         // MI LOTO: C(39,5)
         const n = 39;
         const k = 5;
         totalCombinaciones = factorial(n) / (factorial(k) * factorial(n - k)); // 575,757
     }
-    
+
     // Probabilidad específica de esta combinación
     const probabilidad = 1 / totalCombinaciones;
-    
+
     // Convertir a porcentaje y escalar para ver números legibles
     let porcentaje = probabilidad * 100 * 1000000;
-    
+
     // Ajustar por calidad de la combinación
     const factorCalidad = combinacion.puntuacion / 100;
     porcentaje *= (1 + factorCalidad * 0.5);
-    
+
     return parseFloat(porcentaje.toFixed(10));
 }
 
@@ -199,7 +241,7 @@ function calcularProbabilidad(combinacion, config, juego) {
 function calcularDesviacion(numeros) {
     const n = numeros.length;
     if (n === 0) return 0;
-    
+
     const mean = numeros.reduce((a, b) => a + b) / n;
     const variance = numeros.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
     return Math.sqrt(variance);
@@ -226,10 +268,10 @@ function factorial(n) {
  */
 function seleccionarMejoresCombinaciones(cantidad = null) {
     if (AppState.combinaciones.length === 0) return [];
-    
+
     const total = AppState.combinaciones.length;
     let cantidadASeleccionar;
-    
+
     // Si se especifica cantidad, usarla; si no, aplicar criterio estadístico
     if (cantidad !== null) {
         cantidadASeleccionar = Math.min(cantidad, total);
@@ -247,7 +289,7 @@ function seleccionarMejoresCombinaciones(cantidad = null) {
             cantidadASeleccionar = Math.max(5, Math.min(20, Math.ceil(total * 0.15)));
         }
     }
-    
+
     return [...AppState.combinaciones]
         .sort((a, b) => b.puntuacion - a.puntuacion)
         .slice(0, cantidadASeleccionar);
@@ -263,13 +305,13 @@ function eliminarDuplicados(combinaciones) {
     return combinaciones.filter(combinacion => {
         // Crear una clave única para la combinación
         let key = '';
-        
+
         if (combinacion.colores && combinacion.colores.length > 0) {
-            // Para Color Loto: colores + números asociados
-            const coloresOrdenados = [...combinacion.colores].sort();
-            const numerosOrdenados = combinacion.colorNumeros ? 
-                [...combinacion.colorNumeros].sort((a, b) => a - b) : [];
-            key = `C:${coloresOrdenados.join('-')}|N:${numerosOrdenados.join('-')}`;
+            // Para Color Loto: crear parejas (color, número) y ordenarlas
+            const parejas = combinacion.colores.map((color, index) =>
+                `${color}:${combinacion.colorNumeros[index]}`
+            ).sort();
+            key = `CL:${parejas.join('|')}`;
         } else {
             // Para Baloto y Mi Loto: números + super balota
             const numerosOrdenados = [...combinacion.numeros].sort((a, b) => a - b);
@@ -278,7 +320,7 @@ function eliminarDuplicados(combinaciones) {
                 key += `|SB:${combinacion.superBalota}`;
             }
         }
-        
+
         if (seen.has(key)) {
             return false;
         }
@@ -300,18 +342,18 @@ function generarConNumerosCalientes(config, frecuencia, cantidad = 5) {
         .sort((a, b) => b[1] - a[1])
         .slice(0, 20) // Tomar los 20 más frecuentes
         .map(([numero]) => parseInt(numero));
-    
+
     const combinaciones = [];
-    
+
     for (let i = 0; i < cantidad; i++) {
         // Mezclar números calientes y tomar los necesarios
         const shuffle = [...numerosCalientes].sort(() => Math.random() - 0.5);
         const numeros = shuffle.slice(0, config.numeros).sort((a, b) => a - b);
-        
+
         const combinacion = {
             id: Date.now() + Math.random(),
             numeros,
-            superBalota: config.superBalota ? 
+            superBalota: config.superBalota ?
                 Math.floor(Math.random() * (config.maxSuperBalota - config.minSuperBalota + 1)) + config.minSuperBalota : null,
             colores: [],
             colorNumeros: [],
@@ -320,13 +362,13 @@ function generarConNumerosCalientes(config, frecuencia, cantidad = 5) {
             timestamp: Date.now(),
             usandoNumerosCalientes: true
         };
-        
+
         combinacion.puntuacion = calcularPuntuacion(combinacion, config, document.getElementById('juego').value);
         combinacion.probabilidad = calcularProbabilidad(combinacion, config, document.getElementById('juego').value);
-        
+
         combinaciones.push(combinacion);
     }
-    
+
     return combinaciones;
 }
 

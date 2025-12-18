@@ -29,14 +29,14 @@ export function validarNumero(valor) {
 export function validarRango(numero, min, max) {
     const validacionNumero = validarNumero(numero);
     if (!validacionNumero.valido) return validacionNumero;
-    
+
     if (numero < min || numero > max) {
-        return { 
-            valido: false, 
-            error: `El número debe estar entre ${min} y ${max}` 
+        return {
+            valido: false,
+            error: `El número debe estar entre ${min} y ${max}`
         };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -48,11 +48,11 @@ export function validarRango(numero, min, max) {
 export function validarEntero(numero) {
     const validacionNumero = validarNumero(numero);
     if (!validacionNumero.valido) return validacionNumero;
-    
+
     if (!Number.isInteger(numero)) {
         return { valido: false, error: 'El número debe ser un entero' };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -64,11 +64,11 @@ export function validarEntero(numero) {
 export function validarPositivo(numero) {
     const validacionNumero = validarNumero(numero);
     if (!validacionNumero.valido) return validacionNumero;
-    
+
     if (numero <= 0) {
         return { valido: false, error: 'El número debe ser positivo' };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -96,14 +96,14 @@ export function validarNoVacio(str) {
 export function validarLongitud(str, minLength, maxLength) {
     const validacionVacio = validarNoVacio(str);
     if (!validacionVacio.valido) return validacionVacio;
-    
+
     if (str.length < minLength || str.length > maxLength) {
-        return { 
-            valido: false, 
-            error: `El texto debe tener entre ${minLength} y ${maxLength} caracteres` 
+        return {
+            valido: false,
+            error: `El texto debe tener entre ${minLength} y ${maxLength} caracteres`
         };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -115,11 +115,11 @@ export function validarLongitud(str, minLength, maxLength) {
 export function validarEmail(email) {
     const validacionVacio = validarNoVacio(email);
     if (!validacionVacio.valido) return validacionVacio;
-    
+
     if (!REGEX.EMAIL.test(email)) {
         return { valido: false, error: 'El email no es válido' };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -147,14 +147,14 @@ export function validarLongitudArray(array, longitud) {
     if (!Array.isArray(array)) {
         return { valido: false, error: 'El valor debe ser una lista' };
     }
-    
+
     if (array.length !== longitud) {
-        return { 
-            valido: false, 
-            error: `La lista debe tener exactamente ${longitud} elementos` 
+        return {
+            valido: false,
+            error: `La lista debe tener exactamente ${longitud} elementos`
         };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -167,12 +167,12 @@ export function validarValoresUnicos(array) {
     if (!Array.isArray(array)) {
         return { valido: false, error: 'El valor debe ser una lista' };
     }
-    
+
     const unicos = new Set(array);
     if (unicos.size !== array.length) {
         return { valido: false, error: 'La lista contiene valores duplicados' };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -188,16 +188,16 @@ export function validarPropiedades(obj, propiedades) {
     if (typeof obj !== 'object' || obj === null) {
         return { valido: false, error: 'El valor debe ser un objeto' };
     }
-    
+
     const faltantes = propiedades.filter(prop => !(prop in obj));
-    
+
     if (faltantes.length > 0) {
-        return { 
-            valido: false, 
-            error: `Faltan las siguientes propiedades: ${faltantes.join(', ')}` 
+        return {
+            valido: false,
+            error: `Faltan las siguientes propiedades: ${faltantes.join(', ')}`
         };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -222,11 +222,11 @@ export function validarObjetoNoVacio(obj) {
  */
 export function validarFecha(fecha) {
     const date = new Date(fecha);
-    
+
     if (isNaN(date.getTime())) {
         return { valido: false, error: 'La fecha no es válida' };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -238,14 +238,14 @@ export function validarFecha(fecha) {
 export function validarFechaPasada(fecha) {
     const validacionFecha = validarFecha(fecha);
     if (!validacionFecha.valido) return validacionFecha;
-    
+
     const date = new Date(fecha);
     const ahora = new Date();
-    
+
     if (date > ahora) {
         return { valido: false, error: 'La fecha debe estar en el pasado' };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -257,14 +257,14 @@ export function validarFechaPasada(fecha) {
 export function validarFechaFutura(fecha) {
     const validacionFecha = validarFecha(fecha);
     if (!validacionFecha.valido) return validacionFecha;
-    
+
     const date = new Date(fecha);
     const ahora = new Date();
-    
+
     if (date < ahora) {
         return { valido: false, error: 'La fecha debe estar en el futuro' };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -280,14 +280,14 @@ export function validarTipoArchivo(archivo, tiposPermitidos) {
     if (!(archivo instanceof File)) {
         return { valido: false, error: 'El valor debe ser un archivo' };
     }
-    
+
     if (!tiposPermitidos.includes(archivo.type)) {
-        return { 
-            valido: false, 
-            error: `El tipo de archivo no es permitido. Tipos aceptados: ${tiposPermitidos.join(', ')}` 
+        return {
+            valido: false,
+            error: `El tipo de archivo no es permitido. Tipos aceptados: ${tiposPermitidos.join(', ')}`
         };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -301,15 +301,15 @@ export function validarTamanoArchivo(archivo, maxSize) {
     if (!(archivo instanceof File)) {
         return { valido: false, error: 'El valor debe ser un archivo' };
     }
-    
+
     if (archivo.size > maxSize) {
         const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(2);
-        return { 
-            valido: false, 
-            error: `El archivo es muy grande. Tamaño máximo: ${maxSizeMB} MB` 
+        return {
+            valido: false,
+            error: `El archivo es muy grande. Tamaño máximo: ${maxSizeMB} MB`
         };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -327,11 +327,11 @@ export function validarCantidadCombinaciones(cantidad) {
         validarPositivo(cantidad),
         validarRango(cantidad, VALIDACIONES.NUMERO.MIN, VALIDACIONES.NUMERO.MAX)
     ];
-    
+
     for (const validacion of validaciones) {
         if (!validacion.valido) return validacion;
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -345,10 +345,10 @@ export function validarCombinacionBaloto(numeros, superBalota) {
     // Validar array de números
     let validacion = validarLongitudArray(numeros, 5);
     if (!validacion.valido) return validacion;
-    
+
     validacion = validarValoresUnicos(numeros);
     if (!validacion.valido) return validacion;
-    
+
     // Validar cada número
     for (const num of numeros) {
         validacion = validarRango(num, 1, 43);
@@ -356,13 +356,13 @@ export function validarCombinacionBaloto(numeros, superBalota) {
             return { valido: false, error: `Número ${num} fuera de rango (1-43)` };
         }
     }
-    
+
     // Validar Super Balota
     validacion = validarRango(superBalota, 1, 16);
     if (!validacion.valido) {
         return { valido: false, error: 'Super Balota debe estar entre 1 y 16' };
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -375,10 +375,10 @@ export function validarCombinacionMiLoto(numeros) {
     // Validar array de números
     let validacion = validarLongitudArray(numeros, 5);
     if (!validacion.valido) return validacion;
-    
+
     validacion = validarValoresUnicos(numeros);
     if (!validacion.valido) return validacion;
-    
+
     // Validar cada número
     for (const num of numeros) {
         validacion = validarRango(num, 1, 39);
@@ -386,7 +386,7 @@ export function validarCombinacionMiLoto(numeros) {
             return { valido: false, error: `Número ${num} fuera de rango (1-39)` };
         }
     }
-    
+
     return { valido: true, error: null };
 }
 
@@ -400,13 +400,10 @@ export function validarCombinacionColorLoto(colores, numeros) {
     // Validar arrays
     let validacion = validarLongitudArray(colores, 6);
     if (!validacion.valido) return validacion;
-    
+
     validacion = validarLongitudArray(numeros, 6);
     if (!validacion.valido) return validacion;
-    
-    validacion = validarValoresUnicos(colores);
-    if (!validacion.valido) return { valido: false, error: 'Los colores deben ser únicos' };
-    
+
     // Validar colores permitidos
     const coloresPermitidos = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
     for (const color of colores) {
@@ -414,7 +411,7 @@ export function validarCombinacionColorLoto(colores, numeros) {
             return { valido: false, error: `Color ${color} no es válido` };
         }
     }
-    
+
     // Validar números (1-7 para cada color)
     for (const num of numeros) {
         validacion = validarRango(num, 1, 7);
@@ -422,7 +419,39 @@ export function validarCombinacionColorLoto(colores, numeros) {
             return { valido: false, error: `Número ${num} fuera de rango (1-7)` };
         }
     }
-    
+
+    // Validar que no se repitan parejas (color, número)
+    const parejas = new Set();
+    for (let i = 0; i < colores.length; i++) {
+        const pareja = `${colores[i]}-${numeros[i]}`;
+        if (parejas.has(pareja)) {
+            return {
+                valido: false,
+                error: `La pareja (${colores[i]}, ${numeros[i]}) está duplicada`
+            };
+        }
+        parejas.add(pareja);
+    }
+
+    // Validar regla: colores repetidos OK si números diferentes, O números repetidos OK si colores diferentes
+    const coloresUnicos = new Set(colores).size;
+    const numerosUnicos = new Set(numeros).size;
+
+    // Si hay colores repetidos, los números deben ser únicos o casi únicos (máximo 1 repetido)
+    // Si hay números repetidos, los colores deben ser únicos o casi únicos (máximo 1 repetido)
+    const coloresRepetidos = coloresUnicos < 6;
+    const numerosRepetidos = numerosUnicos < 6;
+
+    if (coloresRepetidos && numerosRepetidos) {
+        // Verificar que al menos uno tenga valores mayormente únicos
+        if (coloresUnicos < 5 && numerosUnicos < 5) {
+            return {
+                valido: false,
+                error: 'No puedes tener muchos colores Y números repetidos. Elige una estrategia: colores únicos O números únicos'
+            };
+        }
+    }
+
     return { valido: true, error: null };
 }
 
@@ -436,15 +465,15 @@ export function validarLoteHistorial(lote) {
     const propiedadesRequeridas = ['id', 'juego', 'combinaciones', 'fecha'];
     const validacion = validarPropiedades(lote, propiedadesRequeridas);
     if (!validacion.valido) return validacion;
-    
+
     // Validar fecha
     const validacionFecha = validarFecha(lote.fecha);
     if (!validacionFecha.valido) return validacionFecha;
-    
+
     // Validar combinaciones
     const validacionArray = validarArrayNoVacio(lote.combinaciones);
     if (!validacionArray.valido) return validacionArray;
-    
+
     return { valido: true, error: null };
 }
 
@@ -458,12 +487,12 @@ export function validarDatosImportados(datos) {
     if (typeof datos !== 'object' || datos === null) {
         return { valido: false, error: 'Los datos deben ser un objeto JSON válido' };
     }
-    
+
     // Verificar estructura esperada
     if (!Array.isArray(datos.historial) && !Array.isArray(datos)) {
         return { valido: false, error: 'El archivo no tiene el formato correcto' };
     }
-    
+
     return { valido: true, error: null };
 }
 
