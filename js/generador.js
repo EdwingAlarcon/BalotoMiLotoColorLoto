@@ -20,69 +20,61 @@ function generarCombinacionUnica(config, juego) {
 
     // Generar números principales según el juego
     if (juego === 'color-loto') {
-        // COLOR LOTERÍA: Generar 6 parejas (color, número) únicas
-        // Reglas: Colores repetidos OK si números diferentes, O números repetidos OK si colores diferentes
-        // No repetir parejas (color, número)
+        // COLOR LOTO: Generar 6 parejas (color, número) únicas
+        // REGLAS OFICIALES:
+        // 1. Puedes repetir colores si tienen números diferentes
+        // 2. Puedes repetir números si tienen colores diferentes
+        // 3. NO puedes repetir la pareja (color, número)
 
         const coloresDisponibles = [...config.coloresDisponibles];
         const parejasGeneradas = new Set(); // Para evitar duplicar (color, número)
         const coloresUsados = [];
         const numerosUsados = [];
 
-        // Decidir estrategia: 50% colores únicos con números posiblemente repetidos,
-        // 50% números únicos con colores posiblemente repetidos
-        const estrategia = Math.random() < 0.5 ? 'colores-unicos' : 'numeros-unicos';
+        // Generar 6 parejas únicas (color, número)
+        // El generador permite cualquier combinación válida según las reglas
+        let intentosGlobales = 0;
+        const maxIntentos = 100;
 
-        if (estrategia === 'colores-unicos') {
-            // Estrategia: 6 colores únicos, números pueden repetirse
-            const coloresSeleccionados = [...coloresDisponibles].sort(() => Math.random() - 0.5).slice(0, 6);
+        while (coloresUsados.length < 6 && intentosGlobales < maxIntentos) {
+            // Seleccionar color aleatorio (puede repetirse)
+            const color = coloresDisponibles[Math.floor(Math.random() * coloresDisponibles.length)];
 
-            for (const color of coloresSeleccionados) {
-                let numero;
-                let intentos = 0;
-                do {
-                    numero = Math.floor(Math.random() * 7) + 1;
-                    intentos++;
-                    if (intentos > 50) break; // Evitar loop infinito
-                } while (parejasGeneradas.has(`${color}-${numero}`));
+            // Seleccionar número aleatorio del 1 al 7 (puede repetirse)
+            const numero = Math.floor(Math.random() * 7) + 1;
 
-                parejasGeneradas.add(`${color}-${numero}`);
+            // Verificar que la pareja (color, número) no esté repetida
+            const pareja = `${color}-${numero}`;
+
+            if (!parejasGeneradas.has(pareja)) {
+                parejasGeneradas.add(pareja);
                 coloresUsados.push(color);
                 numerosUsados.push(numero);
             }
-        } else {
-            // Estrategia: 6 números únicos (del 1 al 7, puede haber 1 repetido), colores pueden repetirse
-            // Como solo hay 7 números y necesitamos 6, casi todos serán únicos
-            const numerosDisponibles = [1, 2, 3, 4, 5, 6, 7];
-            const numerosSeleccionados = [...numerosDisponibles].sort(() => Math.random() - 0.5).slice(0, 6);
 
-            for (const numero of numerosSeleccionados) {
-                let color;
-                let intentos = 0;
-                do {
-                    color = coloresDisponibles[Math.floor(Math.random() * coloresDisponibles.length)];
-                    intentos++;
-                    if (intentos > 50) break; // Evitar loop infinito
-                } while (parejasGeneradas.has(`${color}-${numero}`));
+            intentosGlobales++;
+        }
 
-                parejasGeneradas.add(`${color}-${numero}`);
-                coloresUsados.push(color);
-                numerosUsados.push(numero);
+        // Si no se completaron 6 parejas (muy improbable), completar forzadamente
+        while (coloresUsados.length < 6) {
+            for (const color of coloresDisponibles) {
+                if (coloresUsados.length >= 6) break;
+                for (let numero = 1; numero <= 7; numero++) {
+                    const pareja = `${color}-${numero}`;
+                    if (!parejasGeneradas.has(pareja)) {
+                        parejasGeneradas.add(pareja);
+                        coloresUsados.push(color);
+                        numerosUsados.push(numero);
+                        break;
+                    }
+                }
             }
         }
 
-        // Ordenar por el orden estándar de colores
-        const ordenColores = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
-        const parejas = coloresUsados.map((color, index) => ({
-            color,
-            numero: numerosUsados[index],
-            ordenColor: ordenColores.indexOf(color)
-        }));
-
-        parejas.sort((a, b) => a.ordenColor - b.ordenColor);
-
-        combinacion.colores = parejas.map(p => p.color);
-        combinacion.colorNumeros = parejas.map(p => p.numero);
+        // NO ordenar por colores - mantener el orden de selección aleatoria
+        // Esto permite más variedad en las combinaciones
+        combinacion.colores = coloresUsados;
+        combinacion.colorNumeros = numerosUsados;
 
         // Para Color Loto, los "números" son los números asignados a los colores
         combinacion.numeros = [...combinacion.colorNumeros];

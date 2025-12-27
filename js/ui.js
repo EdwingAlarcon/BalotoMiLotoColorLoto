@@ -9,25 +9,25 @@
 function mostrarNotificacion(tipo, mensaje, duracion = 5000) {
     const notificationArea = document.getElementById('notification-area');
     if (!notificationArea) return;
-    
+
     const notification = document.createElement('div');
     notification.className = `notification ${tipo}`;
     notification.setAttribute('role', 'alert');
-    
+
     const icon = {
         success: '✅',
         error: '❌',
         warning: '⚠️',
         info: 'ℹ️'
     }[tipo] || 'ℹ️';
-    
+
     notification.innerHTML = `
         <span class="notification-icon" aria-hidden="true">${icon}</span>
         <span class="notification-message">${mensaje}</span>
     `;
-    
+
     notificationArea.appendChild(notification);
-    
+
     // Auto-eliminar después de la duración
     setTimeout(() => {
         notification.style.animation = 'fadeOut 0.3s ease-out';
@@ -45,7 +45,7 @@ function mostrarNotificacion(tipo, mensaje, duracion = 5000) {
 function actualizarTablaCombinaciones() {
     const tbody = document.getElementById('cuerpo-tabla');
     if (!tbody) return;
-    
+
     if (AppState.combinaciones.length === 0) {
         tbody.innerHTML = `
             <tr class="empty-state">
@@ -59,10 +59,10 @@ function actualizarTablaCombinaciones() {
         `;
         return;
     }
-    
+
     const juego = document.getElementById('juego').value;
     const config = CONFIG.juegos[juego];
-    
+
     const rows = AppState.combinaciones.map((combinacion, index) => {
         // Generar HTML para números principales
         let numerosHTML = '';
@@ -81,11 +81,11 @@ function actualizarTablaCombinaciones() {
             }).join('');
         } else {
             // Para Baloto y Mi Loto: mostrar números
-            numerosHTML = combinacion.numeros.map(num => 
+            numerosHTML = combinacion.numeros.map(num =>
                 `<span class="number-ball ${juego}-number">${num}</span>`
             ).join('');
         }
-        
+
         // Generar HTML para columna extra
         let extraHTML = '';
         if (juego === 'baloto' && combinacion.superBalota) {
@@ -95,12 +95,12 @@ function actualizarTablaCombinaciones() {
             const coloresStr = combinacion.colores.join(', ');
             extraHTML = `<span class="badge badge-info" title="${coloresStr}">6 colores</span>`;
         }
-        
+
         return `
             <tr data-id="${combinacion.id}" class="${combinacion.selected ? 'selected' : ''}">
                 <td class="col-checkbox">
-                    <input type="checkbox" class="combinacion-checkbox" 
-                           data-id="${combinacion.id}" 
+                    <input type="checkbox" class="combinacion-checkbox"
+                           data-id="${combinacion.id}"
                            ${combinacion.selected ? 'checked' : ''}
                            aria-label="Seleccionar combinación ${index + 1}">
                 </td>
@@ -118,9 +118,9 @@ function actualizarTablaCombinaciones() {
             </tr>
         `;
     }).join('');
-    
+
     tbody.innerHTML = rows;
-    
+
     // Agregar eventos a los checkboxes
     tbody.querySelectorAll('.combinacion-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', manejarSeleccionCombinacion);
@@ -135,11 +135,11 @@ function mostrarReglasJuego() {
     const config = CONFIG.juegos[juego];
     const reglasSection = document.getElementById('reglas-juego');
     const reglasContenido = document.getElementById('reglas-contenido');
-    
+
     if (!reglasSection || !reglasContenido) return;
-    
+
     let reglasHTML = '';
-    
+
     if (juego === 'baloto') {
         reglasHTML = `
             <p><strong>Baloto:</strong></p>
@@ -162,17 +162,29 @@ function mostrarReglasJuego() {
         `;
     } else if (juego === 'color-loto') {
         reglasHTML = `
-            <p><strong>Color Loto:</strong></p>
+            <p><strong>Color Loto - Reglas Oficiales:</strong></p>
             <ul>
-                <li>Selecciona 6 colores diferentes de: amarillo, azul, rojo, verde, blanco, negro</li>
-                <li>A cada color se le asigna un número del 1 al 7</li>
-                <li>Los números pueden repetirse entre diferentes colores</li>
-                <li>Total: 6 colores + 6 números (uno por cada color)</li>
-                <li>Combinaciones posibles: 84,707,280</li>
+                <li>🎨 Debes escoger <strong>6 colores</strong> entre: amarillo, azul, rojo, verde, blanco, negro</li>
+                <li>🔢 A cada color debes asignarle un <strong>número del 1 al 7</strong></li>
+                <li>✅ <strong>Colores pueden repetirse</strong> si tienen números diferentes</li>
+                <li>✅ <strong>Números pueden repetirse</strong> si tienen colores diferentes</li>
+                <li>❌ <strong>NO puedes repetir</strong> la misma pareja (color + número)</li>
+                <li>📊 Combinaciones posibles: 84,707,280</li>
             </ul>
+            <div class="reglas-ejemplos">
+                <p><strong>Ejemplos válidos:</strong></p>
+                <ul>
+                    <li>✅ Amarillo-4, Azul-2, Rojo-6, Verde-6, Blanco-3, Negro-5 (números repetidos OK)</li>
+                    <li>✅ Amarillo-4, Amarillo-5, Rojo-4, Verde-2, Blanco-1, Negro-7 (colores repetidos OK)</li>
+                </ul>
+                <p><strong>Ejemplo inválido:</strong></p>
+                <ul>
+                    <li>❌ Amarillo-4, Azul-2, Amarillo-4, Verde-6, Blanco-3, Negro-5 (Amarillo-4 repetido)</li>
+                </ul>
+            </div>
         `;
     }
-    
+
     reglasContenido.innerHTML = reglasHTML;
     reglasSection.hidden = false;
 }
@@ -194,7 +206,7 @@ function manejarSeleccionCombinacion(event) {
     const checkbox = event.target;
     const id = checkbox.dataset.id;
     const combinacion = AppState.combinaciones.find(c => c.id == id);
-    
+
     if (combinacion) {
         combinacion.selected = checkbox.checked;
         const row = checkbox.closest('tr');
@@ -213,23 +225,24 @@ function manejarSeleccionTodas(event) {
     AppState.combinaciones.forEach(combinacion => {
         combinacion.selected = checked;
     });
-    
+
     actualizarTablaCombinaciones();
 }
 
 /**
  * Selecciona las mejores combinaciones basadas en puntuación
  * Aplica criterios estadísticos según la cantidad de combinaciones
+ * Ordena las combinaciones seleccionadas de mejor a peor
  */
 function seleccionarMejores() {
     if (AppState.combinaciones.length === 0) {
         mostrarNotificacion('warning', 'No hay combinaciones para seleccionar');
         return;
     }
-    
+
     const total = AppState.combinaciones.length;
     let cantidadASeleccionar;
-    
+
     // Aplicar criterio estadístico basado en la cantidad total
     if (total <= 5) {
         // Si hay 5 o menos, seleccionar máximo 3 (top 60%)
@@ -247,24 +260,33 @@ function seleccionarMejores() {
         // Más de 50: seleccionar top 10-15%, mínimo 5, máximo 20
         cantidadASeleccionar = Math.max(5, Math.min(20, Math.ceil(total * 0.15)));
     }
-    
+
     // Deseleccionar todas primero
     AppState.combinaciones.forEach(c => c.selected = false);
-    
-    // Ordenar por puntuación y seleccionar las mejores
-    const mejores = [...AppState.combinaciones]
-        .sort((a, b) => b.puntuacion - a.puntuacion)
-        .slice(0, cantidadASeleccionar);
-    
-    mejores.forEach(combinacion => {
-        combinacion.selected = true;
+
+    // Ordenar todas las combinaciones por puntuación (de mayor a menor)
+    AppState.combinaciones.sort((a, b) => {
+        // Ordenar por puntuación descendente (mejor primero)
+        if (b.puntuacion !== a.puntuacion) {
+            return b.puntuacion - a.puntuacion;
+        }
+        // En caso de empate, ordenar por probabilidad (mayor probabilidad primero)
+        if (a.probabilidad && b.probabilidad) {
+            return b.probabilidad - a.probabilidad;
+        }
+        return 0;
     });
-    
+
+    // Seleccionar las mejores (que ahora están al principio del array)
+    for (let i = 0; i < cantidadASeleccionar; i++) {
+        AppState.combinaciones[i].selected = true;
+    }
+
     actualizarTablaCombinaciones();
-    
+
     const porcentaje = ((cantidadASeleccionar / total) * 100).toFixed(1);
-    mostrarNotificacion('success', 
-        `${cantidadASeleccionar} mejores combinaciones seleccionadas (top ${porcentaje}%)`
+    mostrarNotificacion('success',
+        `${cantidadASeleccionar} mejores combinaciones seleccionadas y ordenadas (top ${porcentaje}%)`
     );
 }
 
@@ -273,16 +295,16 @@ function seleccionarMejores() {
  */
 function eliminarSeleccionadas() {
     const seleccionadas = AppState.combinaciones.filter(c => c.selected);
-    
+
     if (seleccionadas.length === 0) {
         mostrarNotificacion('warning', 'No hay combinaciones seleccionadas para eliminar');
         return;
     }
-    
+
     AppState.combinaciones = AppState.combinaciones.filter(c => !c.selected);
     actualizarTablaCombinaciones();
     actualizarEstadisticas();
-    
+
     mostrarNotificacion('info', `${seleccionadas.length} combinación(es) eliminada(s)`);
 }
 
@@ -302,19 +324,19 @@ function limpiarCombinacionesSilencioso() {
  */
 function manejarCambioJuego() {
     const rulesSection = document.querySelector('.rules-section');
-    
+
     // Agregar clase de actualización para animación
     if (rulesSection) {
         rulesSection.classList.add('updating');
         setTimeout(() => rulesSection.classList.remove('updating'), 500);
     }
-    
+
     // Limpiar combinaciones actuales sin confirmación
     if (AppState.combinaciones.length > 0) {
         limpiarCombinacionesSilencioso();
         mostrarNotificacion('info', 'Resultados limpiados al cambiar tipo de juego');
     }
-    
+
     // Actualizar reglas y clases visuales
     mostrarReglasJuego();
     actualizarClasesJuego();
@@ -325,15 +347,15 @@ function manejarCambioJuego() {
  */
 function limpiarCombinaciones() {
     if (AppState.combinaciones.length === 0) return;
-    
+
     if (!confirm('¿Estás seguro de que quieres limpiar todas las combinaciones?')) {
         return;
     }
-    
+
     AppState.combinaciones = [];
     actualizarTablaCombinaciones();
     actualizarEstadisticas();
-    
+
     mostrarNotificacion('info', 'Todas las combinaciones han sido eliminadas');
 }
 
@@ -342,13 +364,13 @@ function limpiarCombinaciones() {
  */
 function alternarTema() {
     const nuevoTema = AppState.tema === 'light' ? 'dark' : 'light';
-    
+
     // Agregar clase de transición
     document.body.setAttribute('data-theme-transitioning', '');
-    
+
     // Aplicar tema
     aplicarTema(nuevoTema);
-    
+
     // Remover clase después de la animación
     setTimeout(() => {
         document.body.removeAttribute('data-theme-transitioning');
@@ -363,7 +385,7 @@ function aplicarTema(tema) {
     AppState.tema = tema;
     document.documentElement.setAttribute('data-theme', tema);
     localStorage.setItem('tema', tema);
-    
+
     // Actualizar icono
     const themeIcon = document.getElementById('themeIcon');
     if (themeIcon) {
@@ -377,13 +399,13 @@ function aplicarTema(tema) {
 function mostrarHistorial() {
     const modal = document.getElementById('historico-modal');
     if (!modal) return;
-    
+
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
-    
+
     // Cargar contenido del histórico
     cargarContenidoHistorico();
-    
+
     // Enfocar el botón de cerrar para accesibilidad
     setTimeout(() => {
         const closeBtn = document.getElementById('cerrar-historico');
@@ -397,10 +419,10 @@ function mostrarHistorial() {
 function cerrarHistorial() {
     const modal = document.getElementById('historico-modal');
     if (!modal) return;
-    
+
     modal.hidden = true;
     document.body.style.overflow = '';
-    
+
     // Regresar el foco al botón que abrió el modal
     const openBtn = document.getElementById('ver-historial');
     if (openBtn) openBtn.focus();
@@ -412,7 +434,7 @@ function cerrarHistorial() {
 function cargarContenidoHistorico() {
     const contenido = document.getElementById('historico-contenido');
     if (!contenido) return;
-    
+
     if (AppState.historial.length === 0) {
         contenido.innerHTML = `
             <div class="empty-message">
@@ -422,7 +444,7 @@ function cargarContenidoHistorico() {
         `;
         return;
     }
-    
+
     const historicoHTML = AppState.historial.map(lote => {
         const juegoNombre = CONFIG.juegos[lote.juego].nombre;
         const fecha = new Date(lote.fecha).toLocaleDateString('es-ES', {
@@ -432,7 +454,7 @@ function cargarContenidoHistorico() {
             hour: '2-digit',
             minute: '2-digit'
         });
-        
+
         return `
             <div class="historico-lote card">
                 <div class="lote-header">
@@ -447,7 +469,7 @@ function cargarContenidoHistorico() {
                             const coloresMostrar = combinacion.colores.slice(0, 3);
                             return `
                                 <div class="combinacion-mini">
-                                    ${coloresMostrar.map(color => 
+                                    ${coloresMostrar.map(color =>
                                         `<span class="number-ball mini-ball color-${color}">${color.charAt(0)}</span>`
                                     ).join('')}
                                     <span class="badge badge-info">+${combinacion.colores.length - 3} más</span>
@@ -458,23 +480,23 @@ function cargarContenidoHistorico() {
                             const numerosMostrar = combinacion.numeros.slice(0, 3);
                             return `
                                 <div class="combinacion-mini">
-                                    ${numerosMostrar.map(num => 
+                                    ${numerosMostrar.map(num =>
                                         `<span class="number-ball mini-ball ${lote.juego}-number">${num}</span>`
                                     ).join('')}
-                                    ${combinacion.superBalota ? 
+                                    ${combinacion.superBalota ?
                                         `<span class="number-ball mini-ball super-balota">${combinacion.superBalota}</span>` : ''}
                                     <span class="badge badge-info">+${combinacion.numeros.length - 3} más</span>
                                 </div>
                             `;
                         }
                     }).join('')}
-                    ${lote.combinaciones.length > 3 ? 
+                    ${lote.combinaciones.length > 3 ?
                         `<p class="text-center mt-1">... y ${lote.combinaciones.length - 3} combinaciones más</p>` : ''}
                 </div>
             </div>
         `;
     }).join('');
-    
+
     contenido.innerHTML = historicoHTML;
 }
 

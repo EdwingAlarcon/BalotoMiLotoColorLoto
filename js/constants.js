@@ -50,7 +50,7 @@ export const JUEGOS = {
         superBalota: false,
         colores: true,
         coloresDisponibles: ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'],
-        descripcion: '6 colores diferentes, cada uno con un número del 1 al 7',
+        descripcion: '6 parejas (color, número). Colores pueden repetirse si los números difieren. Números pueden repetirse si los colores difieren.',
         icono: '🌈',
         color: '#9933cc'
     }

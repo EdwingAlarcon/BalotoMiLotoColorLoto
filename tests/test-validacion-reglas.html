@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Validación - Color Loto</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; }
+        .combinacion {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .pareja {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .color-amarillo { background: #FFD700; color: #000; }
+        .color-azul { background: #0066FF; color: #fff; }
+        .color-rojo { background: #FF0000; color: #fff; }
+        .color-verde { background: #00CC00; color: #fff; }
+        .color-blanco { background: #FFFFFF; color: #000; border: 1px solid #ccc; }
+        .color-negro { background: #000000; color: #fff; }
+        .valida { border: 3px solid #2ecc71; }
+        .invalida { border: 3px solid #e74c3c; }
+        .stats {
+            background: #e8f4f8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Validación - Color Loto</h1>
+
+    <div class="test-section">
+        <h2>Configuración del Generador</h2>
+        <button class="btn" onclick="generarYMostrar(1)">Generar 1 Combinación</button>
+        <button class="btn" onclick="generarYMostrar(5)">Generar 5 Combinaciones</button>
+        <button class="btn" onclick="generarYMostrar(10)">Generar 10 Combinaciones</button>
+    </div>
+
+    <div id="resultados" class="test-section">
+        <h2>Resultados</h2>
+        <p>Haz clic en un botón para generar combinaciones.</p>
+    </div>
+
+    <script>
+        // Configuración
+        const config = {
+            coloresDisponibles: ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro']
+        };
+
+        function generarCombinacion() {
+            const coloresDisponibles = [...config.coloresDisponibles];
+            const parejasGeneradas = new Set();
+            const coloresUsados = [];
+            const numerosUsados = [];
+
+            let intentosGlobales = 0;
+            const maxIntentos = 100;
+
+            while (coloresUsados.length < 6 && intentosGlobales < maxIntentos) {
+                const color = coloresDisponibles[Math.floor(Math.random() * coloresDisponibles.length)];
+                const numero = Math.floor(Math.random() * 7) + 1;
+                const pareja = `${color}-${numero}`;
+
+                if (!parejasGeneradas.has(pareja)) {
+                    parejasGeneradas.add(pareja);
+                    coloresUsados.push(color);
+                    numerosUsados.push(numero);
+                }
+
+                intentosGlobales++;
+            }
+
+            return {
+                colores: coloresUsados,
+                numeros: numerosUsados,
+                parejas: Array.from(parejasGeneradas)
+            };
+        }
+
+        function validarCombinacion(combinacion) {
+            const parejasSet = new Set();
+            const errores = [];
+
+            for (let i = 0; i < combinacion.colores.length; i++) {
+                const pareja = `${combinacion.colores[i]}-${combinacion.numeros[i]}`;
+                if (parejasSet.has(pareja)) {
+                    errores.push(`Pareja repetida: ${pareja}`);
+                }
+                parejasSet.add(pareja);
+            }
+
+            return {
+                valida: errores.length === 0,
+                errores
+            };
+        }
+
+        function analizarCombinaciones(combinaciones) {
+            let coloresRepetidosCuenta = 0;
+            let numerosRepetidosCuenta = 0;
+            let todosColoresUnicosCuenta = 0;
+
+            combinaciones.forEach(comb => {
+                const coloresUnicos = new Set(comb.colores).size;
+                const numerosUnicos = new Set(comb.numeros).size;
+
+                if (coloresUnicos < 6) coloresRepetidosCuenta++;
+                if (numerosUnicos < 6) numerosRepetidosCuenta++;
+                if (coloresUnicos === 6) todosColoresUnicosCuenta++;
+            });
+
+            return {
+                coloresRepetidos: coloresRepetidosCuenta,
+                numerosRepetidos: numerosRepetidosCuenta,
+                todosColoresUnicos: todosColoresUnicosCuenta,
+                total: combinaciones.length
+            };
+        }
+
+        function generarYMostrar(cantidad) {
+            const combinaciones = [];
+            for (let i = 0; i < cantidad; i++) {
+                combinaciones.push(generarCombinacion());
+            }
+
+            const stats = analizarCombinaciones(combinaciones);
+
+            let html = '<h2>Resultados</h2>';
+
+            html += `<div class="stats">
+                <h3>📊 Estadísticas de ${cantidad} combinación(es)</h3>
+                <p>✅ Combinaciones con colores repetidos: <strong>${stats.coloresRepetidos}</strong> (${((stats.coloresRepetidos/stats.total)*100).toFixed(1)}%)</p>
+                <p>✅ Combinaciones con números repetidos: <strong>${stats.numerosRepetidos}</strong> (${((stats.numerosRepetidos/stats.total)*100).toFixed(1)}%)</p>
+                <p>📝 Combinaciones con todos colores únicos: <strong>${stats.todosColoresUnicos}</strong> (${((stats.todosColoresUnicos/stats.total)*100).toFixed(1)}%)</p>
+                <p><em>Nota: Es normal que algunas tengan todos colores únicos. Lo importante es que también se generen con repeticiones.</em></p>
+            </div>`;
+
+            combinaciones.forEach((comb, idx) => {
+                const validacion = validarCombinacion(comb);
+                const claseValidez = validacion.valida ? 'valida' : 'invalida';
+
+                const coloresUnicos = new Set(comb.colores).size;
+                const numerosUnicos = new Set(comb.numeros).size;
+
+                html += `<div class="combinacion ${claseValidez}">
+                    <strong>#${idx + 1}:</strong>`;
+
+                for (let i = 0; i < comb.colores.length; i++) {
+                    html += `<span class="pareja color-${comb.colores[i]}">${comb.colores[i].charAt(0).toUpperCase()}-${comb.numeros[i]}</span>`;
+                }
+
+                html += `<span style="margin-left: 10px;">`;
+                if (coloresUnicos < 6) html += `🎨 ${6-coloresUnicos} color(es) repetido(s) `;
+                if (numerosUnicos < 6) html += `🔢 ${6-numerosUnicos} número(s) repetido(s) `;
+                if (coloresUnicos === 6 && numerosUnicos === 6) html += `✨ Todos únicos`;
+                html += `</span>`;
+
+                if (!validacion.valida) {
+                    html += `<br><span style="color: red;">❌ ${validacion.errores.join(', ')}</span>`;
+                } else {
+                    html += `<span style="color: green; margin-left: 10px;">✅</span>`;
+                }
+
+                html += `</div>`;
+            });
+
+            document.getElementById('resultados').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
