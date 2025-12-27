@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <!-- Hojas de estilo -->
-    <link rel="stylesheet" href="./styles/main.css?v=20241227">
+    <link rel="stylesheet" href="./styles/main.css?v=20241227-4">
 
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎰</text></svg>">
@@ -356,14 +356,14 @@
     </div>
 
     <!-- Scripts (RUTAS CORREGIDAS) - Cache busting con timestamp -->
-    <script src="./js/ui-modules/accessibility.js?v=20241227" defer></script>
-    <script src="./js/ui-modules/notifications.js?v=20241227" defer></script>
-    <script src="./js/ui-modules/table-manager.js?v=20241227" defer></script>
-    <script src="./js/storage.js?v=20241227" defer></script>
-    <script src="./js/generador.js?v=20241227" defer></script>
-    <script src="./js/estadisticas.js?v=20241227" defer></script>
-    <script src="./js/ui.js?v=20241227" defer></script>
-    <script src="./js/app.js?v=20241227" defer></script>
+    <script src="./js/ui-modules/accessibility.js?v=20241227-4" defer></script>
+    <script src="./js/ui-modules/notifications.js?v=20241227-4" defer></script>
+    <script src="./js/ui-modules/table-manager.js?v=20241227-4" defer></script>
+    <script src="./js/storage.js?v=20241227-4" defer></script>
+    <script src="./js/generador.js?v=20241227-4" defer></script>
+    <script src="./js/estadisticas.js?v=20241227-4" defer></script>
+    <script src="./js/ui.js?v=20241227-4" defer></script>
+    <script src="./js/app.js?v=20241227-4" defer></script>
 
     <!-- Script de pruebas (solo para desarrollo) -->
     <script src="./tests/test-color-loto.js" defer></script>
@@ -379,7 +379,7 @@
 
         // Verificar versión de caché y alertar si es necesario limpiar
         (function() {
-            const VERSION_ACTUAL = '20241227';
+            const VERSION_ACTUAL = '20241227-4';
             const versionGuardada = localStorage.getItem('app-version');
 
             if (versionGuardada !== VERSION_ACTUAL) {

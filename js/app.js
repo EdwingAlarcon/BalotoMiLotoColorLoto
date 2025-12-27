@@ -442,22 +442,53 @@ function generarCombinacionSimple(config, juego) {
     };
 
     if (juego === 'color-loto') {
-        // COLOR LOTO
-        const coloresDisponibles = [...config.coloresDisponibles];
-        for (let i = coloresDisponibles.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [coloresDisponibles[i], coloresDisponibles[j]] = [coloresDisponibles[j], coloresDisponibles[i]];
+        // COLOR LOTO - USAR GENERADOR CORRECTO
+        // Llamar a la función del generador.js que tiene las estrategias correctas
+        if (typeof generarCombinacionUnica === 'function') {
+            const tempComb = generarCombinacionUnica(config, juego);
+            combinacion.colores = tempComb.colores;
+            combinacion.colorNumeros = tempComb.colorNumeros;
+            combinacion.numeros = tempComb.numeros;
+            combinacion.puntuacion = tempComb.puntuacion;
+            combinacion.probabilidad = tempComb.probabilidad;
+        } else {
+            // Fallback si no existe la función principal
+            const coloresDisponibles = [...config.coloresDisponibles];
+            const parejasGeneradas = new Set();
+            const coloresUsados = [];
+            const numerosUsados = [];
+
+            // NO ORDENAR - mantener aleatoriedad
+            let intentos = 0;
+            while (coloresUsados.length < 6 && intentos < 100) {
+                const color = coloresDisponibles[Math.floor(Math.random() * coloresDisponibles.length)];
+                const numero = Math.floor(Math.random() * 7) + 1;
+                const pareja = `${color}-${numero}`;
+
+                if (!parejasGeneradas.has(pareja)) {
+                    parejasGeneradas.add(pareja);
+                    coloresUsados.push(color);
+                    numerosUsados.push(numero);
+                }
+                intentos++;
+            }
+
+            combinacion.colores = coloresUsados;
+            combinacion.colorNumeros = numerosUsados;
+            combinacion.numeros = [...numerosUsados];
+
+            // Ordenar según patrón oficial
+            const ordenColores = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
+            const parejas = coloresUsados.map((color, index) => ({
+                color,
+                numero: numerosUsados[index],
+                ordenColor: ordenColores.indexOf(color)
+            }));
+            parejas.sort((a, b) => a.ordenColor - b.ordenColor);
+            combinacion.colores = parejas.map(p => p.color);
+            combinacion.colorNumeros = parejas.map(p => p.numero);
+            combinacion.numeros = [...combinacion.colorNumeros];
         }
-
-        // Tomar los primeros 6 colores y ordenarlos según el patrón
-        const coloresSeleccionados = coloresDisponibles.slice(0, 6);
-        const ordenColores = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
-        combinacion.colores = coloresSeleccionados.sort((a, b) => {
-            return ordenColores.indexOf(a) - ordenColores.indexOf(b);
-        });
-
-        combinacion.colorNumeros = combinacion.colores.map(() => Math.floor(Math.random() * 7) + 1);
-        combinacion.numeros = [...combinacion.colorNumeros];
 
     } else {
         // BALOTO y MI LOTO

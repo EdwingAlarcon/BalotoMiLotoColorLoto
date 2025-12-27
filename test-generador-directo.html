@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Directo del Generador</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .output {
+            background: #252526;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 3px solid #007acc;
+        }
+        .combinacion {
+            margin: 8px 0;
+            padding: 8px;
+            background: #2d2d30;
+            border-radius: 3px;
+        }
+        .pareja {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 2px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .amarillo { background: #FFD700; color: #000; }
+        .azul { background: #0066FF; color: #fff; }
+        .rojo { background: #FF0000; color: #fff; }
+        .verde { background: #00CC00; color: #000; }
+        .blanco { background: #FFFFFF; color: #000; }
+        .negro { background: #000000; color: #fff; }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        h1 { color: #4ec9b0; }
+        h2 { color: #569cd6; }
+        .stats {
+            background: #1a472a;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+        .warning {
+            background: #4d3319;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            border-left: 3px solid #ce9178;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Directo del Generador Color Loto</h1>
+
+    <div class="warning">
+        <strong>⚠️ Este test usa el código EXACTO del generador</strong><br>
+        Si ves variedad aquí pero no en la app principal, el problema es de caché del navegador.
+    </div>
+
+    <button onclick="testGenerador(10)">Generar 10 Combinaciones</button>
+    <button onclick="testGenerador(20)">Generar 20 Combinaciones</button>
+    <button onclick="testGenerador(50)">Generar 50 Combinaciones</button>
+    <button onclick="limpiar()">Limpiar</button>
+
+    <div id="output"></div>
+
+    <script>
+        // CÓDIGO EXACTO DEL GENERADOR ACTUALIZADO
+        function generarColorLoto() {
+            const coloresDisponibles = ['amarillo', 'azul', 'rojo', 'verde', 'blanco', 'negro'];
+            const parejasGeneradas = new Set();
+            const coloresUsados = [];
+            const numerosUsados = [];
+
+            // Elegir estrategia aleatoria
+            const random = Math.random();
+            let estrategia;
+
+            if (random < 0.30) {
+                estrategia = 'colores-repetidos';
+            } else if (random < 0.60) {
+                estrategia = 'numeros-repetidos';
+            } else {
+                estrategia = 'aleatorio';
+            }
+
+            if (estrategia === 'colores-repetidos') {
+                // Forzar colores repetidos
+                const coloresARepetir = Math.floor(Math.random() * 2) + 2;
+                const coloresSeleccionados = coloresDisponibles
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, coloresARepetir);
+
+                while (coloresUsados.length < 6) {
+                    const color = coloresSeleccionados[Math.floor(Math.random() * coloresSeleccionados.length)];
+                    const numero = Math.floor(Math.random() * 7) + 1;
+                    const pareja = `${color}-${numero}`;
+
+                    if (!parejasGeneradas.has(pareja)) {
+                        parejasGeneradas.add(pareja);
+                        coloresUsados.push(color);
+                        numerosUsados.push(numero);
+                    }
+                }
+            } else if (estrategia === 'numeros-repetidos') {
+                // Forzar números repetidos
+                const numerosARepetir = Math.floor(Math.random() * 2) + 2;
+                const numerosSeleccionados = [];
+                while (numerosSeleccionados.length < numerosARepetir) {
+                    const num = Math.floor(Math.random() * 7) + 1;
+                    if (!numerosSeleccionados.includes(num)) {
+                        numerosSeleccionados.push(num);
+                    }
+                }
+
+                while (coloresUsados.length < 6) {
+                    const color = coloresDisponibles[Math.floor(Math.random() * coloresDisponibles.length)];
+                    const numero = numerosSeleccionados[Math.floor(Math.random() * numerosSeleccionados.length)];
+                    const pareja = `${color}-${numero}`;
+
+                    if (!parejasGeneradas.has(pareja)) {
+                        parejasGeneradas.add(pareja);
+                        coloresUsados.push(color);
+                        numerosUsados.push(numero);
+                    }
+                }
+            } else {
+                // Aleatorio puro
+                let intentos = 0;
+                while (coloresUsados.length < 6 && intentos < 100) {
+                    const color = coloresDisponibles[Math.floor(Math.random() * coloresDisponibles.length)];
+                    const numero = Math.floor(Math.random() * 7) + 1;
+                    const pareja = `${color}-${numero}`;
+
+                    if (!parejasGeneradas.has(pareja)) {
+                        parejasGeneradas.add(pareja);
+                        coloresUsados.push(color);
+                        numerosUsados.push(numero);
+                    }
+                    intentos++;
+                }
+            }
+
+            // Fallback
+                for (const color of coloresDisponibles) {
+                    if (coloresUsados.length >= 6) break;
+                    for (let numero = 1; numero <= 7; numero++) {
+                        const pareja = `${color}-${numero}`;
+                        if (!parejasGeneradas.has(pareja)) {
+                            parejasGeneradas.add(pareja);
+                            coloresUsados.push(color);
+                            numerosUsados.push(numero);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return { colores: coloresUsados, numeros: numerosUsados };
+        }
+
+        function analizarCombinacion(comb) {
+            const coloresUnicos = new Set(comb.colores).size;
+            const numerosUnicos = new Set(comb.numeros).size;
+            return { coloresUnicos, numerosUnicos };
+        }
+
+        function testGenerador(cantidad) {
+            const combinaciones = [];
+            for (let i = 0; i < cantidad; i++) {
+                combinaciones.push(generarColorLoto());
+            }
+
+            let conColoresRepetidos = 0;
+            let conNumerosRepetidos = 0;
+            let todosUnicos = 0;
+
+            let html = `<div class="output">`;
+            html += `<h2>📊 Resultados de ${cantidad} Combinaciones</h2>`;
+
+            combinaciones.forEach((comb, idx) => {
+                const analisis = analizarCombinacion(comb);
+
+                if (analisis.coloresUnicos < 6) conColoresRepetidos++;
+                if (analisis.numerosUnicos < 6) conNumerosRepetidos++;
+                if (analisis.coloresUnicos === 6 && analisis.numerosUnicos === 6) todosUnicos++;
+
+                html += `<div class="combinacion">`;
+                html += `<strong>#${idx + 1}:</strong> `;
+
+                for (let i = 0; i < comb.colores.length; i++) {
+                    html += `<span class="pareja ${comb.colores[i]}">${comb.colores[i].charAt(0).toUpperCase()}-${comb.numeros[i]}</span>`;
+                }
+
+                html += ` → `;
+                if (analisis.coloresUnicos < 6) {
+                    html += `<span style="color: #4ec9b0;">🎨 ${6-analisis.coloresUnicos} color(es) repetido(s)</span> `;
+                }
+                if (analisis.numerosUnicos < 6) {
+                    html += `<span style="color: #ce9178;">🔢 ${6-analisis.numerosUnicos} número(s) repetido(s)</span> `;
+                }
+                if (analisis.coloresUnicos === 6 && analisis.numerosUnicos === 6) {
+                    html += `<span style="color: #dcdcaa;">✨ Todos únicos</span>`;
+                }
+
+                html += `</div>`;
+            });
+
+            html += `<div class="stats">`;
+            html += `<h3>📈 Estadísticas</h3>`;
+            html += `<p>✅ Con colores repetidos: <strong>${conColoresRepetidos}</strong> (${((conColoresRepetidos/cantidad)*100).toFixed(1)}%)</p>`;
+            html += `<p>✅ Con números repetidos: <strong>${conNumerosRepetidos}</strong> (${((conNumerosRepetidos/cantidad)*100).toFixed(1)}%)</p>`;
+            html += `<p>✨ Todos únicos: <strong>${todosUnicos}</strong> (${((todosUnicos/cantidad)*100).toFixed(1)}%)</p>`;
+            html += `</div>`;
+
+            if (conColoresRepetidos === 0 && conNumerosRepetidos === 0) {
+                html += `<div class="warning"><strong>⚠️ PROBLEMA DETECTADO:</strong> Ninguna combinación tiene repeticiones. Esto NO es normal estadísticamente.</div>`;
+            } else {
+                html += `<div class="output" style="border-left-color: #4ec9b0;"><strong>✅ GENERADOR FUNCIONANDO CORRECTAMENTE:</strong> Se detectan combinaciones con repeticiones.</div>`;
+            }
+
+            html += `</div>`;
+
+            document.getElementById('output').innerHTML = html;
+        }
+
+        function limpiar() {
+            document.getElementById('output').innerHTML = '';
+        }
+
+        // Generar automáticamente al cargar
+        window.onload = function() {
+            testGenerador(10);
+        };
+    </script>
+</body>
+</html>
